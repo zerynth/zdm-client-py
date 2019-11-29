@@ -1,6 +1,10 @@
 import paho.mqtt.client as mqtt
 import json 
 
+    
+
+
+
 class MQTTClient(object):
 
     def __init__(self, hostname="localhost", port=1883, user="admin", password="Z3rynthT3st"):
@@ -29,9 +33,13 @@ class MQTTClient(object):
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code "+str(rc))
 
+
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg):
         print(msg.topic+" "+str(msg.payload))
+
+    def subscribe(self, topic, qos=0):
+        self.mqttc.subscribe(topic, qos)
 
     def loop(self):
         self.mqttc.loop_forever()
