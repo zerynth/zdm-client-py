@@ -1,7 +1,7 @@
 import adm
 import click
 import time
-
+import json
 
 @click.group()
 def main():
@@ -28,6 +28,13 @@ def publish(device_id, mqtt_hostname, mqtt_port, mqtt_user, mqtt_password, count
         device.publish_data(payload)
 
 @main.command()
-def test(count, name):
-    """Simple program that greets NAME for a total of COUNT times."""
-    print("Test scrti")
+@click.option('--rpc-url', default='http://127.0.0.1:7777', help='Endpoint of the RPC Service')
+@click.argument('method')
+@click.argument('params')
+@click.argument('device')
+def rpc(rpc_url, method, params, device):
+    """Send an RPC to a device"""
+    print(params)
+    client = adm.ADMClient(rpc_url=rpc_url)
+    rpc = {'method': method, 'parameters': params, "devices":[device]}
+    client.send_rpc(payload=rpc)
