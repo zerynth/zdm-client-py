@@ -9,7 +9,7 @@ It permits to:
 #### Usage
 
 ```
-$ pip installl git+ssh://git@repo.zerynth.com:10022/zerynth-adm/adm-py.git@master#egg=adm-py
+$ pip install git+ssh://git@repo.zerynth.com:10022/zerynth-adm/adm-py.git@master#egg=adm-py
 
 $ adm-py 
 
@@ -24,5 +24,4 @@ Options:
 Commands:
   device  Emulated a Device
   rpc     Manage the RPC
-
 ```
