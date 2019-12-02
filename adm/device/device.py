@@ -2,14 +2,19 @@
 from .mqtt import MQTTClient
 import json
 
+from ..logging import MyLogger
+
+logger = MyLogger().get_logger()
+
 class Device():
 
     def __init__(self, uuid, hostname="localhost", port=1883, user="admin", password="Z3rynthT3st",  rpc=None):
         self.uuid = uuid
         self.rpc = rpc
-        self.mqqt = MQTTClient( hostname,  port, user, password)
+        self.mqqt = MQTTClient(hostname, port, user, password)
+        logger.info("[{}] mqqt client: {}:{}".format(self.id, hostname, port))
+     
         # self.mqqt = MyMqttClient()
-
         self.topic_data = "data/"
         self.topic_up = "j/up/"
         self.topic_down = "j/dn/#" # j/dn
@@ -32,16 +37,19 @@ class Device():
 
     def connect(self):
         self.mqqt.connect()
-        self.subscribe_down() # subscribe to the down queu
+        self.subscribe_down() # subscribe to the down quue
+       
 
     def subscribe_down(self):
-        print("subscribed to down : {}".format(self.topic_down))
+        logger.info("[{}] subscribed to topic: {}".format(self.id, self.topic_down))
+
         self.mqqt.subscribe(self.topic_down, qos=1)
         self.mqqt.mqttc.message_callback_add(self.topic_down, self._on_message_down_queuue)
 
     def _on_message_down_queuue(self, client, userdata, msg):
         payload = json.loads(msg.payload)
-        print("received from topic: {} msg: {}".format(msg.topic, str(payload)))
+        logger.info("[{}] recevied from topic: {}, msg: {}".format(self.id, msg.topic,  str(payload)))
+
         try:
             result = self.rpc[payload['method']](self, payload["args"])
             print("rpc: {}, res:{} ".format(payload['method'],str(result)))

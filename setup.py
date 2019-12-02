@@ -6,7 +6,8 @@ with open("README.md", "r") as fh:
 
 requirements  = [
     "paho-mqtt",
-    "requests"
+    "requests",
+    "click"
 ]
 
 
@@ -21,6 +22,9 @@ setuptools.setup(
     url="https://repo.zerynth.com/zerynth-adm/adm-py",
     packages=setuptools.find_packages(),
     install_requires=requirements,
+    entry_points = {
+        'console_scripts': ['adm-py=adm.cli.command_line:main'],
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

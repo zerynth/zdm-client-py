@@ -1,7 +1,10 @@
 from   paho.mqtt.client import Client as  PahoClient
 import  json 
 
-    
+from ..logging import MyLogger
+
+logger = MyLogger().get_logger()
+
 class MyMqttClient(PahoClient):
 
     def __init__(self, hostname="localhost", port=1883, user="admin", password="Z3rynthT3st"):
@@ -23,8 +26,9 @@ class MyMqttClient(PahoClient):
     #     Node.importance.fset(self, new_importance)
 
     def connect(self):
-        print("connecting to {} {}".format(self.hostname, self.port))
         super().connect(self.hostname, self.port, 60)
+        # logger.info("Connected succesfully to MQTT boker.".format(self.hostname, self.port))
+
 
 
     # def publish(self, topic, payload=None):
@@ -36,7 +40,9 @@ class MyMqttClient(PahoClient):
 
     # # The callback for when the client receives a CONNACK response from the server.
     def on_connect(self, client, userdata, flags, rc):
-        print("Connected with result code "+str(rc))
+        # print("Connected with result code "+str(rc))
+        logger.info("Connected succesfully to MQTT boker.".format(self.hostname, self.port))
+
 
 
     # The callback for when a PUBLISH message is received from the server.

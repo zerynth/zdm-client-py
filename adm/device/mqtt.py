@@ -1,8 +1,9 @@
 import paho.mqtt.client as mqtt
 import json 
 
-    
+from ..logging import MyLogger
 
+logger = MyLogger().get_logger()
 
 
 class MQTTClient(object):
@@ -17,7 +18,7 @@ class MQTTClient(object):
         self.mqttc.on_message = self.on_message
         
     def connect(self):
-        print("connceting to {} {}".format(self.hostname, self.port))
+        logger.debug("Connecting to {}:{}.".format(self.hostname, self.port))
         self.mqttc.connect(self.hostname, self.port, 60)
 
 
@@ -26,19 +27,20 @@ class MQTTClient(object):
         if type(payload) is dict:
             payload = json.dumps(payload)
         self.mqttc.publish(topic, payload)
-        print("[] sent: {}".format( payload))
+        logger.info("Publish on Topic: {}, Data:{}".format(topic, payload))
 
     # The callback for when the client receives a CONNACK response from the server.
     def on_connect(self, client, userdata, flags, rc):
-        print("Connected with result code "+str(rc))
+        logger.info("Connected succesfully with code:{}.".format(str(rc)))
 
 
     # The callback for when a PUBLISH message is received from the server.
     def on_message(self, client, userdata, msg):
-        print(msg.topic+" "+str(msg.payload))
+        logger.info("Message received from topic: {}, data:{}".format(msg.topic, str(msg.payload)))
 
     def subscribe(self, topic, qos=0):
         self.mqttc.subscribe(topic, qos)
+        logger.info("Subscried to topic: {}".format(topic))
 
     def loop(self):
         self.mqttc.loop_forever()
