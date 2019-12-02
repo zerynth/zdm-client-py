@@ -21,6 +21,5 @@ pip install -r requiremetns.txt
 #### Install from local git
 
 ```
-
 pip installl git+ssh://git@repo.zerynth.com:10022/zerynth-adm/adm-py.git@master#egg=adm-py
 ```
