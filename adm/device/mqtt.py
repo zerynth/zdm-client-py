@@ -16,18 +16,17 @@ class MQTTClient(object):
         self.mqttc.on_connect = self.on_connect
         self.mqttc.on_message = self.on_message
         
-    
     def connect(self):
         print("connceting to {} {}".format(self.hostname, self.port))
         self.mqttc.connect(self.hostname, self.port, 60)
 
 
     def publish(self, topic, payload=None):
-        print("publishing {} into {}".format(payload,  topic))
-        # if isinstance(payload, dict):
-        #     print("DICTIONARY")
-        #     payload = json.dumps(payload)
+        # print("publishing {} into {}".format(payload,  topic))
+        if type(payload) is dict:
+            payload = json.dumps(payload)
         self.mqttc.publish(topic, payload)
+        print("[] sent: {}".format( payload))
 
     # The callback for when the client receives a CONNACK response from the server.
     def on_connect(self, client, userdata, flags, rc):

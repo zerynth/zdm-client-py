@@ -1,12 +1,15 @@
+# from .mqtt import MQTTClient
 from .mqtt import MQTTClient
 import json
 
 class Device():
 
-    def __init__(self, uuid, rpc=None):
+    def __init__(self, uuid, hostname="localhost", port=1883, user="admin", password="Z3rynthT3st",  rpc=None):
         self.uuid = uuid
         self.rpc = rpc
-        self.mqqt = MQTTClient()
+        self.mqqt = MQTTClient( hostname,  port, user, password)
+        # self.mqqt = MyMqttClient()
+
         self.topic_data = "data/"
         self.topic_up = "j/up/"
         self.topic_down = "j/dn/#" # j/dn
@@ -14,8 +17,11 @@ class Device():
 
     @property
     def id(self):
-        return self.id
-        
+        return self.uuid
+    
+    def start(self):
+        self.mqqt.mqttc.loop_forever()
+
     def publish_data(self, payload):
         topic = self.topic_data + self.uuid
         self.mqqt.publish(topic, payload)
@@ -24,6 +30,9 @@ class Device():
         topic = self.topic_up + self.uuid
         self.mqqt.publish(topic, payload)
 
+    def connect(self):
+        self.mqqt.connect()
+        self.subscribe_down() # subscribe to the down queu
 
     def subscribe_down(self):
         print("subscribed to down : {}".format(self.topic_down))
