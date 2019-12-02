@@ -2,24 +2,27 @@
 
 ADM SDK for python
 It permits to:
-   - publish data to the ADM, 
-   - receive and responde to RPC.
-   - create new devices
-  - create RPC
+   - emulate a device (publish data to the ADM, receive and responde to RPC.
+   - mange RPC
 
 
-```
-virtualenv -p python venv
-
-source venv/bin/activate
-
-pip install -r requiremetns.txt
+#### Usage
 
 ```
+$ pip installl git+ssh://git@repo.zerynth.com:10022/zerynth-adm/adm-py.git@master#egg=adm-py
 
+$ adm-py 
 
-#### Install from local git
+Generate new instance
+Usage: adm-py [OPTIONS] COMMAND [ARGS]...
 
-```
-pip installl git+ssh://git@repo.zerynth.com:10022/zerynth-adm/adm-py.git@master#egg=adm-py
+  CLI of the ADM SDK.
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  device  Emulated a Device
+  rpc     Manage the RPC
+
 ```
