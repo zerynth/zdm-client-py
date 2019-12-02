@@ -34,7 +34,6 @@ def publish(device_id, mqtt_hostname, mqtt_port, mqtt_user, mqtt_password, count
 @click.argument('device')
 def rpc(rpc_url, method, params, device):
     """Send an RPC to a device"""
-    print(params)
     client = adm.ADMClient(rpc_url=rpc_url)
     rpc = {'method': method, 'parameters': params, "devices":[device]}
     client.send_rpc(payload=rpc)
