@@ -1,12 +1,11 @@
-
 import adm
 import random
 import time
 
 """
 Create a Device that sends messages to the ingestion queuue of the ADM.
-
 """
+
 NUM_MESSAGES = 100    # number of messages to send
 TAGS = ["caffe", "cibo", "bevande", "armadi",
         "case", "tutto"]  # tags where to publish

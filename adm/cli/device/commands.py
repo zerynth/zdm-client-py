@@ -1,27 +1,25 @@
 import click
 import adm
-import time
 
 @click.group()
 def device():
-    """Emulated a Device"""
+    """Manage the Device"""
     pass
 
 @device.command()
-@click.option('--device-id', default="dev01", help='Device ID')
-@click.option('--mqtt-hostname', default='rmq.zerinth.com', help='Mqqt hostname')
-@click.option('--mqtt-port', default=1883, help='Mqqt port')
-@click.option('--mqtt-user', default='mqtt', help='Mqqt user')
-@click.option('--mqtt-password', default='mqtt', help='Mqqt password')
-@click.option('--count', default=1000, help='Number of messages to publish')
-@click.argument('message')
-def publish(device_id, mqtt_hostname, mqtt_port, mqtt_user, mqtt_password, count, message):
-    """Create a device and publish messages into ADM ingestion"""
-    device = adm.Device(device_id, hostname=mqtt_hostname, port=mqtt_port, user=mqtt_user, password=mqtt_password)
-    device.connect()
+@click.option('--fleet-url', default='http://127.0.0.1:8000', help='URL of the Fleet Service')
+@click.option('--fleet-id', default='null', help='Fleet ID where the device is assigned')
+@click.argument('name')
+def create(fleet_url, fleet_id, name):
+    """Create a device"""
+    client = adm.ADMClient(fleetdev_url=fleet_url)
+    client.create_device(name, fleet_id)
 
-    # Publish message into the topic "data/<devid>"
-    for x in range (count):
-        time.sleep(2)
-        payload = {"msg": message, "num":x}
-        device.publish_data(payload)
+
+@device.command()
+@click.option('--fleet-url', default='http://127.0.0.1:8000', help='Fleet endpoint')
+@click.argument('id')
+def get(fleet_url, id):
+    """Get a single device"""
+    client = adm.ADMClient(fleetdev_url=fleet_url)
+    client.get_device(id)
