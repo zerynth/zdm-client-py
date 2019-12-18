@@ -14,9 +14,10 @@ class ADMClient(object):
     
     """
 
-    def __init__(self, rpc_url="http://127.0.0.1:7777", fleetdev_url="http://127.0.0.1:8000"):
+    def __init__(self, rpc_url="http://127.0.0.1:7777", fleetdev_url="http://127.0.0.1:8000", accounts_url="http://127.0.0.1:8001"):
         self.rpc_url = rpc_url
         self.fleet_dev_url = fleetdev_url
+        self.accounts_url = accounts_url
     
     def send_rpc(self, payload):
         # {"rpc":1, "method":"get_temp", "args":null, "status": "pendind"}
@@ -33,9 +34,9 @@ class ADMClient(object):
 
     def create_device(self, name, fleetId=None):
         # if fleetid is None, the device is assigned to a defualt fleet of the account.
-        payload = {"name": name, "FleetID":fleetId}
+        payload = {"name": name,"FleetID":("" if fleetId is None else fleetId )}
         print("Creating device {}".format(name))
-        path = "{}/device/".format(self.fleet_dev_url)
+        path = "{}/device/".format(self.fleet_dev_url, fleetId)
         print(path)
         r = requests.post(path, data=json.dumps(payload))
         print(r.status_code)
@@ -43,15 +44,27 @@ class ADMClient(object):
     
     def get_device(self, id):
         path = "{}/device/{}".format(self.fleet_dev_url, id)
+        print("Get a single device")
+        r  = requests.get(path)
+        print(r.text)
+    
+        
+    def get_devices(self):
+        path = "{}/device".format(self.fleet_dev_url )
+        logger.info("Get all the Devices")
+        r  = requests.get(path)
+        print(r.text)
+        path = "{}/device/{}".format(self.fleet_dev_url, id)
         print("Get a singel device")
         r  = requests.get(path)
         print(r.text)
-
+        
     def create_fleet(self, name):
         payload = {"Name": name}
         path = "{}/fleet/".format(self.fleet_dev_url)
-        print(path)
-        r = requests.post(self.fleet_dev_url, payload)
+        logger.debug("Path create fleet: {}".format(path))
+        logger.info("Creating fleet: {}".format(name))
+        r = requests.post(path, data=json.dumps(payload))
         print(r.status_code)
         print(r.text)
 
@@ -65,7 +78,53 @@ class ADMClient(object):
 
     def get_fleet(self, id):
         path = "{}/fleet/{}".format(self.fleet_dev_url, id)
-        logger.info("Get a single fleet".format(path))
+        logger.info("Get a single fleet: {}".format(path))
+        r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+
+    
+    def register(self, name, password, email):
+        path = "{}/account".format(self.accounts_url)
+        logger.info("Registering an account: {}".format(path))
+        payload = {"name": name, "password": password, "mail": email}
+        r = requests.post(path, data=json.dumps(payload))
+        print(r.status_code)
+        print(r.text)
+
+    def account_login(self, email, password):
+        path = "{}/account/login/{}/{}".format(self.accounts_url, email, password)
+        logger.info("Login a account: {}".format(path))
+        r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+    
+    def get_account(self, account_id):
+        path = "{}/account/{}".format(self.accounts_url, account_id)
+        logger.info("Get an account: {}".format(path))
+        r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+
+    def add_user(self, account_id, name, password, email):
+        path = "{}/account/{}/user".format(self.accounts_url, account_id)
+        logger.info("Adding user {} to account {}: {}".format(name, account_id, path))
+        payload = {"name": name, "password": password, "mail": email}
+        r = requests.post(path, json=payload)
+        print(r.status_code)
+        print(r.text)
+    
+    def get_users(self, account_id):
+        path = "{}/account/{}/users".format(self.accounts_url, account_id)
+        logger.info("get users of account id {}: {}".format(account_id, path))
+        r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+    
+    
+    def user_login(self, email, password):
+        path = "{}/user/login/{}/{}".format(self.accounts_url, email, password)
+        logger.info("Login an user: {}".format(path))
         r = requests.get(path)
         print(r.status_code)
         print(r.text)

@@ -4,6 +4,7 @@ from .rpc import commands as rpc
 # from .device import commands as thing
 from .fleet.commands import fleet
 from .device.commands import device
+from .account.commands import account
 
 @click.group()
 def main():
@@ -13,4 +14,5 @@ def main():
 main.add_command(rpc.rpc)
 main.add_command(fleet)
 main.add_command(device)
+main.add_command(account)
 #main.add_command(thing.device)

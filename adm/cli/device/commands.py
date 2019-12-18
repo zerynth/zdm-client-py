@@ -23,3 +23,10 @@ def get(fleet_url, id):
     """Get a single device"""
     client = adm.ADMClient(fleetdev_url=fleet_url)
     client.get_device(id)
+    
+@device.command()
+@click.option('--fleet-url', default='http://127.0.0.1:8000', help='Fleet endpoint')
+def all(fleet_url):
+    """Get all the devices"""
+    client = adm.ADMClient(fleetdev_url=fleet_url)
+    client.get_devices()
