@@ -14,10 +14,12 @@ class ADMClient(object):
     
     """
 
-    def __init__(self, rpc_url="http://127.0.0.1:7777", fleetdev_url="http://127.0.0.1:8000", accounts_url="http://127.0.0.1:8001"):
+    def __init__(self, rpc_url="http://127.0.0.1:7777", fleetdev_url="http://127.0.0.1:8000", accounts_url="http://127.0.0.1:8001",
+            status_url="http://127.0.0.1_8002"):
         self.rpc_url = rpc_url
         self.fleet_dev_url = fleetdev_url
         self.accounts_url = accounts_url
+        self.status_url = status_url
     
     def send_rpc(self, payload):
         # {"rpc":1, "method":"get_temp", "args":null, "status": "pendind"}
@@ -126,5 +128,35 @@ class ADMClient(object):
         path = "{}/user/login/{}/{}".format(self.accounts_url, email, password)
         logger.info("Login an user: {}".format(path))
         r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+
+
+    def create_changeset(self, key, value, targets):
+        path = "{}/changeset".format(self.status_url)
+        logger.info("Creating a changeset: {}".format(self.status_url))
+        payload = {"key":key, "value":value, "targets":targets}
+        r = request.post(path, json=payload)
+        print(r.status_code)
+        print(r.text)
+
+    def get_changeset(self, changeset_id):
+        path "{}/changeset/{}".format(self.status_url, changeset_id)
+        logger.info("Get the {} changeset: {}".format(changeset_id, path))
+        r = request.get(path)
+        print(r.status_code)
+        print(r.text)
+
+    def get_current_status(self, device_id):
+        path = "{}/currentstatus/{}".format(self.status_url, device_id)
+        logger.info("Get the current status of {} device: {}".format(device_id, path))
+        r = request.get(path)
+        print(r.status_code)
+        print(r.text)
+
+    def get_expected_status(self, device_id):
+        path = "{}/expectedstatus/{}".format(self.status_url, device_id)
+        logger.info("Get the expected status of {} device: {}".format(device_id, path))
+        r = request.get(path)
         print(r.status_code)
         print(r.text)
