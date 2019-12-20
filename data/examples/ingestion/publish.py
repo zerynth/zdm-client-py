@@ -3,7 +3,7 @@ import random
 import time
 
 """
-Create a Device that sends messages to the ingestion queuue of the ADM.
+Create a Device that sends messages to the ingestion queue of the ADM.
 """
 
 NUM_MESSAGES = 100    # number of messages to send

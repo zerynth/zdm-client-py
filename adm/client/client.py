@@ -14,10 +14,11 @@ class ADMClient(object):
     
     """
 
-    def __init__(self, rpc_url="http://127.0.0.1:7777", fleetdev_url="http://127.0.0.1:8000", accounts_url="http://127.0.0.1:8001"):
+    def __init__(self, rpc_url="http://127.0.0.1:7777", workspace_url="http://127.0.0.1:8000",fleetdev_url="http://127.0.0.1:8000", accounts_url="http://127.0.0.1:8001"):
         self.rpc_url = rpc_url
         self.fleet_dev_url = fleetdev_url
         self.accounts_url = accounts_url
+        self.workspace_url = workspace_url
     
     def send_rpc(self, payload):
         # {"rpc":1, "method":"get_temp", "args":null, "status": "pendind"}
@@ -121,10 +122,16 @@ class ADMClient(object):
         print(r.status_code)
         print(r.text)
     
-    
     def user_login(self, email, password):
         path = "{}/user/login/{}/{}".format(self.accounts_url, email, password)
         logger.info("Login an user: {}".format(path))
         r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+
+    def workspace_create(self, name):
+        path = "{}/workspace/".format(self.workspace_url)
+        logger.info("Creating a workspace: {}".format(path))
+        r = requests.post(path, json={"Name":name})
         print(r.status_code)
         print(r.text)
