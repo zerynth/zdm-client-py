@@ -15,11 +15,12 @@ class ADMClient(object):
     """
 
     def __init__(self, rpc_url="http://127.0.0.1:7777", fleetdev_url="http://127.0.0.1:8000", accounts_url="http://127.0.0.1:8001",
-            status_url="http://127.0.0.1_8002"):
+            status_url="http://127.0.0.1_8002", tsmanager_url="http://127.0.0.1_8006"):
         self.rpc_url = rpc_url
         self.fleet_dev_url = fleetdev_url
         self.accounts_url = accounts_url
         self.status_url = status_url
+        self.tsmanager_url = tsmanager_url
     
     def send_rpc(self, payload):
         # {"rpc":1, "method":"get_temp", "args":null, "status": "pendind"}
@@ -136,27 +137,41 @@ class ADMClient(object):
         path = "{}/changeset".format(self.status_url)
         logger.info("Creating a changeset: {}".format(self.status_url))
         payload = {"key":key, "value":value, "targets":targets}
-        r = request.post(path, json=payload)
+        r = requests.post(path, json=payload)
         print(r.status_code)
         print(r.text)
 
     def get_changeset(self, changeset_id):
-        path "{}/changeset/{}".format(self.status_url, changeset_id)
+        path = "{}/changeset/{}".format(self.status_url, changeset_id)
         logger.info("Get the {} changeset: {}".format(changeset_id, path))
-        r = request.get(path)
+        r = requests.get(path)
         print(r.status_code)
         print(r.text)
 
     def get_current_status(self, device_id):
         path = "{}/currentstatus/{}".format(self.status_url, device_id)
         logger.info("Get the current status of {} device: {}".format(device_id, path))
-        r = request.get(path)
+        r = requests.get(path)
         print(r.status_code)
         print(r.text)
 
     def get_expected_status(self, device_id):
         path = "{}/expectedstatus/{}".format(self.status_url, device_id)
         logger.info("Get the expected status of {} device: {}".format(device_id, path))
-        r = request.get(path)
+        r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+
+    def list_workspace_tags(self, workspace_id):
+        path = "{}/workspace/{}/tags".format(self.tsmanager_url, workspace_id)
+        logger.info("Get all the tags for the workspace with id {}: {}".format(workspace_id, path))
+        r = requests.post(path)
+        print(r.status_code)
+        print(r.text)
+
+    def get_tag(self, workspace_id, tag, start=None, end=None, device_id=None, custom=None):
+        path = "{}/workspace/{}/tag/{}".format(self.tsmanager_url, workspace_id, tag)
+        r = requests.get(path, params={'start': None if start is None else start, 'end':None if end is None else end,
+                                       'device_id':None if device_id is None else device_id, 'custom':None if custom is None else custom})
         print(r.status_code)
         print(r.text)
