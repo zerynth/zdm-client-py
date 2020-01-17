@@ -7,7 +7,7 @@ def tsmanager():
     pass
 
 @tsmanager.command()
-@click.option('--tsmanager-url', default='http://127.0.0.1:8005', help='URL of the TSManager service')
+@click.option('--tsmanager-url', default='http://api.zerinth.com/v1/tsmanager', help='URL of the TSManager service')
 @click.argument('workspace_id')
 def create_workspace_table(tsmanager_url, workspace_id):
     """Create a workspace table"""
@@ -15,7 +15,7 @@ def create_workspace_table(tsmanager_url, workspace_id):
     client.create_workspace_table(workspace_id)
 
 @tsmanager.command()
-@click.option('--tsmanager-url', default='http://127.0.0.1:8005', help='URL of the TSManager service')
+@click.option('--tsmanager-url', default='http://api.zerinth.com/v1/tsmanager', help='URL of the TSManager service')
 @click.argument('timestamp_device')
 @click.argument('tag')
 @click.argument('device_id')
@@ -27,7 +27,7 @@ def insert_row(tsmanager_url, timestamp_device, tag, device_id, payload, workspa
     client.insert_row(timestamp_device, tag, device_id, payload, workspace_id)
 
 @tsmanager.command()
-@click.option('--tsmanager-url', default='http://127.0.0.1:8005', help='URL of the TSManager service')
+@click.option('--tsmanager-url', default='http://api.zerinth.com/v1/tsmanager', help='URL of the TSManager service')
 @click.argument('workspace_id')
 def list_workspace_tags(tsmanager_url, workspace_id):
     """List workspace tags"""
@@ -35,7 +35,7 @@ def list_workspace_tags(tsmanager_url, workspace_id):
     client.list_workspace_tags(workspace_id)
 
 @tsmanager.command()
-@click.option('--tsmanager-url', default='http://127.0.0.1:8005', help='URL of the TSManager service')
+@click.option('--tsmanager-url', default='http://api.zerinth.com/v1/tsmanager', help='URL of the TSManager service')
 @click.argument('workspace_id')
 @click.argument('tag')
 @click.option('--start', default=None, help='starting time')
