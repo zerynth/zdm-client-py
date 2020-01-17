@@ -35,13 +35,14 @@ def list_workspace_tags(tsmanager_url, workspace_id):
     client.list_workspace_tags(workspace_id)
 
 @tsmanager.command()
+@click.option('--tsmanager-url', default='http://127.0.0.1:8005', help='URL of the TSManager service')
 @click.argument('workspace_id')
 @click.argument('tag')
-@click.option('--start', default='null', help='starting time')
-@click.option('--end', default='null', help='end time')
-@click.option('--device_id', default='null', help='device id')
-@click.option('--custom', default='null', help='custom query fields')
+@click.option('--start', default=None, help='starting time')
+@click.option('--end', default=None, help='end time')
+@click.option('--device_id', default=None, help='device id')
+@click.option('--custom', default=None, help='custom query fields')
 def get_tag(tsmanager_url, workspace_id, tag, start, end, device_id, custom):
     """Get workspace tags with a custom query """
     client = adm.ADMClient(tsmanager_url=tsmanager_url)
-    client.get_tag(workspace_id,tag, start, end, device_id, custom)
+    client.get_tag(workspace_id, tag, start, end, device_id, custom)

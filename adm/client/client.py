@@ -193,16 +193,18 @@ class ADMClient(object):
     def create_workspace_table(self, workspace_id):
         path = "{}/workspacetable".format(self.tsmanager_url)
         logger.info("Creating a workspace table with id: {}".format(workspace_id))
-        payload = {"worskpaceID": workspace_id}
-        r = request.post(path, json=payload)
+        payload = {"workspaceID": workspace_id}
+        print("received",workspace_id)
+        r = requests.post(path, json=payload)
         print(r.status_code)
         print(r.text) 
 
     def insert_row(self, timestamp_device, tag, device_id, payload, workspace_id) :
         path = "{}/insertrow".format(self.tsmanager_url)
+        logger.info("For current timestamp use $(date -u + \"%Y-%m-%dT%H:%M:%SZ\")")
         logger.info("Inserting a row in the workspace: {}".format(workspace_id))
         payload = {"timestampDevice": timestamp_device, "tag": tag, "deviceID":device_id, "payload":payload, "workspaceID": workspace_id}
-        r = request.post(path, json=payload)
+        r = requests.post(path, json=payload)
         print(r.status_code)
         print(r.text)
 
@@ -214,8 +216,12 @@ class ADMClient(object):
         print(r.text)
 
     def get_tag(self, workspace_id, tag, start=None, end=None, device_id=None, custom=None):
-        path = "{}/workspace/{}/tag/{}".format(self.tsmanager_url, workspace_id, tag)
-        r = requests.get(path, params={'start': None if start is None else start, 'end':None if end is None else end,
-                                       'device_id':None if device_id is None else device_id, 'custom':None if custom is None else custom})
+        path = "{}/workspace/{}/tag/{}?deviceid={}&start={}&end={}&custom={}".format(self.tsmanager_url, workspace_id, tag, "" if device_id is None else device_id,
+            "" if start is None else start, "" if end is None else end, "" if custom is None else custom)
+        logger.info("Get custom tag query for {} tag: {}".format(tag, path))
+        payload = {'start': None if start is None else start, 'end':None if end is None else end,
+                                       'device_id':None if device_id is None else device_id, 'custom':None if custom is None else custom}
+        r = requests.get(path, params=payload)
+
         print(r.status_code)
         print(r.text)
