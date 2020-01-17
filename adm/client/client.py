@@ -19,7 +19,7 @@ class ADMClient(object):
                 accounts_url="http://127.0.0.1:8001", 
                 workspace_url="http://127.0.0.1:8001",
                 status_url="http://127.0.0.1_8002",
-                tsmanager_url="http://127.0.0.1_8006"):
+                tsmanager_url="http://127.0.0.1_8005"):
 
         self.rpc_url = rpc_url
         self.fleet_dev_url = fleetdev_url
@@ -66,7 +66,6 @@ class ADMClient(object):
         print(r.status_code)
         print(r.text)
 
-
     def get_devices(self):
         path = "{}/device".format(self.fleet_dev_url )
         logger.info("Get all the Devices")
@@ -89,7 +88,6 @@ class ADMClient(object):
         r = requests.get(path)
         print(r.status_code)
         print(r.text)
-        
 
     def get_fleet(self, id):
         path = "{}/fleet/{}".format(self.fleet_dev_url, id)
@@ -192,10 +190,26 @@ class ADMClient(object):
         print(r.status_code)
         print(r.text)
 
+    def create_workspace_table(self, workspace_id):
+        path = "{}/workspacetable".format(self.tsmanager_url)
+        logger.info("Creating a workspace table with id: {}".format(workspace_id))
+        payload = {"worskpaceID": workspace_id}
+        r = request.post(path, json=payload)
+        print(r.status_code)
+        print(r.text) 
+
+    def insert_row(self, timestamp_device, tag, device_id, payload, workspace_id) :
+        path = "{}/insertrow".format(self.tsmanager_url)
+        logger.info("Inserting a row in the workspace: {}".format(workspace_id))
+        payload = {"timestampDevice": timestamp_device, "tag": tag, "deviceID":device_id, "payload":payload, "workspaceID": workspace_id}
+        r = request.post(path, json=payload)
+        print(r.status_code)
+        print(r.text)
+
     def list_workspace_tags(self, workspace_id):
         path = "{}/workspace/{}/tags".format(self.tsmanager_url, workspace_id)
         logger.info("Get all the tags for the workspace with id {}: {}".format(workspace_id, path))
-        r = requests.post(path)
+        r = requests.get(path)
         print(r.status_code)
         print(r.text)
 
