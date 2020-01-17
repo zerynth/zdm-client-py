@@ -18,12 +18,16 @@ class ADMClient(object):
                 fleetdev_url="http://127.0.0.1:8000", 
                 accounts_url="http://127.0.0.1:8001", 
                 workspace_url="http://127.0.0.1:8001",
-                status_url="http://127.0.0.1_8002"):
+                status_url="http://127.0.0.1_8002",
+                tsmanager_url="http://127.0.0.1_8005"):
+
         self.rpc_url = rpc_url
         self.fleet_dev_url = fleetdev_url
         self.accounts_url = accounts_url
         self.status_url = status_url
+        self.tsmanager_url = tsmanager_url
         self.workspace_url = workspace_url
+
     
     def send_rpc(self, payload):
         # {"rpc":1, "method":"get_temp", "args":null, "status": "pendind"}
@@ -61,7 +65,6 @@ class ADMClient(object):
         print(r.status_code)
         print(r.text)
 
-
     def get_devices(self):
         path = "{}/device".format(self.fleet_dev_url )
         logger.info("Get all the Devices")
@@ -84,7 +87,6 @@ class ADMClient(object):
         r = requests.get(path)
         print(r.status_code)
         print(r.text)
-        
 
     def get_fleet(self, id):
         path = "{}/fleet/{}".format(self.fleet_dev_url, id)
@@ -184,5 +186,41 @@ class ADMClient(object):
         path = "{}/expectedstatus/{}".format(self.status_url, device_id)
         logger.info("Get the expected status of {} device: {}".format(device_id, path))
         r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+
+    def create_workspace_table(self, workspace_id):
+        path = "{}/workspacetable".format(self.tsmanager_url)
+        logger.info("Creating a workspace table with id: {}".format(workspace_id))
+        payload = {"workspaceID": workspace_id}
+        print("received",workspace_id)
+        r = requests.post(path, json=payload)
+        print(r.status_code)
+        print(r.text) 
+
+    def insert_row(self, timestamp_device, tag, device_id, payload, workspace_id) :
+        path = "{}/insertrow".format(self.tsmanager_url)
+        logger.info("For current timestamp use $(date -u + \"%Y-%m-%dT%H:%M:%SZ\")")
+        logger.info("Inserting a row in the workspace: {}".format(workspace_id))
+        payload = {"timestampDevice": timestamp_device, "tag": tag, "deviceID":device_id, "payload":payload, "workspaceID": workspace_id}
+        r = requests.post(path, json=payload)
+        print(r.status_code)
+        print(r.text)
+
+    def list_workspace_tags(self, workspace_id):
+        path = "{}/workspace/{}/tags".format(self.tsmanager_url, workspace_id)
+        logger.info("Get all the tags for the workspace with id {}: {}".format(workspace_id, path))
+        r = requests.get(path)
+        print(r.status_code)
+        print(r.text)
+
+    def get_tag(self, workspace_id, tag, start=None, end=None, device_id=None, custom=None):
+        path = "{}/workspace/{}/tag/{}?deviceid={}&start={}&end={}&custom={}".format(self.tsmanager_url, workspace_id, tag, "" if device_id is None else device_id,
+            "" if start is None else start, "" if end is None else end, "" if custom is None else custom)
+        logger.info("Get custom tag query for {} tag: {}".format(tag, path))
+        payload = {'start': None if start is None else start, 'end':None if end is None else end,
+                                       'device_id':None if device_id is None else device_id, 'custom':None if custom is None else custom}
+        r = requests.get(path, params=payload)
+
         print(r.status_code)
         print(r.text)
