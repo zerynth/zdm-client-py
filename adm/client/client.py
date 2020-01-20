@@ -45,8 +45,8 @@ class ADMClient(object):
     def create_device(self, name, fleetId=None):
         # if fleetid is None, the device is assigned to a defualt fleet of the account.
         payload = {"name": name,"FleetID":("" if fleetId is None else fleetId )}
-        path = "{}/device".format(self.fleet_dev_url, fleetId)
-        print("Creating device {}: {}".format(name, path))
+        path = "{}/device/".format(self.fleet_dev_url, fleetId)
+        logger.info("Creating device {}: {}".format(name, path))
         r = requests.post(path, data=json.dumps(payload))
         print(r.status_code)
         print(r.text)
