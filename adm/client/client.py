@@ -18,8 +18,9 @@ class ADMClient(object):
                 fleetdev_url="http://127.0.0.1:8000", 
                 accounts_url="http://127.0.0.1:8001", 
                 workspace_url="http://127.0.0.1:8001",
-                status_url="http://127.0.0.1_8002",
-                tsmanager_url="http://127.0.0.1_8005"):
+                status_url="http://127.0.0.1:8002",
+                tsmanager_url="http://127.0.0.1:8005",
+                gates_url="http://127.0.0.1:8007"):
 
         self.rpc_url = rpc_url
         self.fleet_dev_url = fleetdev_url
@@ -27,6 +28,7 @@ class ADMClient(object):
         self.status_url = status_url
         self.tsmanager_url = tsmanager_url
         self.workspace_url = workspace_url
+        self.gates_url = gates_url
 
     
     def send_rpc(self, payload):
@@ -194,7 +196,6 @@ class ADMClient(object):
         path = "{}/workspacetable".format(self.tsmanager_url)
         logger.info("Creating a workspace table with id: {}".format(workspace_id))
         payload = {"workspaceID": workspace_id}
-        print("received",workspace_id)
         r = requests.post(path, json=payload)
         print(r.status_code)
         print(r.text) 
@@ -223,5 +224,41 @@ class ADMClient(object):
                                        'device_id':None if device_id is None else device_id, 'custom':None if custom is None else custom}
         r = requests.get(path, params=payload)
 
+        print(r.status_code)
+        print(r.text)
+
+    def create_webhook(self, name, url, content_type, period):
+        path = "{}/gate".format(self.gates_url)
+        logger.info("Creating a new webhook gate: {}".format(path))
+        payload = {"name":name, "url":url, "content-type":content_type, "period":period}
+        r = requests.post(path, json=payload)
+        print(r.status_code)
+        print(r.text)
+
+    def get_gate(self, gate_id):
+        path = "{}/gate/{}".format(self.gates_url, gate_id)
+        logger.info("Getting information of gate {}: {}".format(gate_id, path))
+        r = requests.get
+        print(r.status_code)
+        print(r.text)
+
+    def get_all_gates(self, status=None):
+        path = "{}/gate?status={}".format(self.gates_url, "" if status is None else status)
+        logger.info("Getting list of gates with {} status: {}".format("any" if status is None else status, path))
+        r = requests.get
+        print(r.status_code)
+        print(r.text)
+
+    def update_gate_status(self, gate_id, status):
+        path = "{}/gate/{}".format(self.gates_url, gate_id)
+        payload = {"status":status}
+        r = requests.put(path, json=payload)
+        print(r.status_code)
+        print(r.text)
+
+    def delete_gate(self, gate_id):
+        path = "{}/gate/{}".format(self.gates_url, gate_id)
+        logger.info("Deleting gate {}: {}".format(gate_id, path))
+        r = requests.delete
         print(r.status_code)
         print(r.text)
