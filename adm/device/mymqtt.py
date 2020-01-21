@@ -12,6 +12,7 @@ class MyMqttClient(PahoClient):
 
         # must be called before connect()
         super().username_pw_set(username=user, password=password)
+        super().
        
         self.hostname =  hostname
         self.port = port
