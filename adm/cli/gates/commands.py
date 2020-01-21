@@ -9,7 +9,7 @@ def gates():
 
 
 @gates.command()
-@click.option('--gates-url', default='http://api.zerinth.com/v1/gate', help='URL of the gates service')
+@click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
 @click.argument('name')
 @click.argument('url')
 @click.argument('content_type')
@@ -21,7 +21,7 @@ def create_webhook(gates_url, name, url, content_type, period):
 
 
 @gates.command()
-@click.option('--gates-url', default='http://api.zerinth.com/v1/gate', help='URL of the gates service')
+@click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
 @click.argument('gate_id')
 def get_gate(gates_url, gate_id):
     """Get a gate by its id"""
@@ -30,7 +30,7 @@ def get_gate(gates_url, gate_id):
 
 
 @gates.command()
-@click.option('--gates-url', default='http://api.zerinth.com/v1/gate', help='URL of the gates service')
+@click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
 @click.option('status', default=None, help='Use active or disabled to filter results on status')
 def get_all_gates(gates_url, status):
     """Get the list of all gates created filtering on status. If no status is passed it get all of them"""
@@ -38,7 +38,7 @@ def get_all_gates(gates_url, status):
     client.get_all_gates(status)
 
 @gates.command()
-@click.option('--gates-url', default='http://api.zerinth.com/v1/gate', help='URL of the gates service')
+@click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
 @click.argument('gate_id')
 @click.argument('status')
 def update_status(gates_url, gate_id, status):
@@ -47,7 +47,7 @@ def update_status(gates_url, gate_id, status):
     client.update_gate_status(gate_id, status)
 
 @gates.command()
-@click.option('--gates-url', default='http://api.zerinth.com/v1/gate', help='URL of the gates service')
+@click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
 @click.argument('gate_id')
 def delete_gate(gates_url, gate_id):
     """Delete an existing gate"""
