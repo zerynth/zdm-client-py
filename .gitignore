@@ -122,3 +122,5 @@ dmypy.json
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# ---> Intellij
+.idea/*
