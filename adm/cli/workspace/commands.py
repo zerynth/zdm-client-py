@@ -12,7 +12,7 @@ def workspace():
 def create(workspace_url, name):
     """Create a workspace"""
     client = adm.ADMClient(workspace_url=workspace_url)
-    client.workspace_create(name)
+    client.create_workspace(name)
     
 @workspace.command()
 @click.option('--workspace-url', default='http://api.localhost/v1', help='URL of the Fleet Service')
@@ -20,7 +20,7 @@ def create(workspace_url, name):
 def get(workspace_url, id):
     """Get a workspace"""
     client = adm.ADMClient(workspace_url=workspace_url)
-    client.workspace_get(id)
+    client.get_workspace(id)
 
 @workspace.command()
 @click.option('--workspace-url',default='http://api.localhost/v1', help='Fleet endpoint')

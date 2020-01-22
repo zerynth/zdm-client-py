@@ -12,8 +12,16 @@ TAGS = ["caffe", "cibo", "bevande", "armadi",
 NAMES= ["prova1", "prova2", "prova3", "prova4"]
 
 
+
+
+exit(1)
+
+
 device = adm.Device("dev01", hostname="rmq.localhost",
                     port=1883, user="admin", password="Z3rynthT3st")
+
+
+
 device.connect()
 
 
