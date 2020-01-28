@@ -227,24 +227,25 @@ class ADMClient(object):
         print(r.text)
 
     def create_webhook(self, name, url, content_type, period):
-        path = "{}/gate".format(self.gates_url)
+        path = "{}/gate/".format(self.gates_url)
         logger.info("Creating a new webhook gate: {}".format(path))
         payload = {"name":name, "url":url, "content-type":content_type, "period":period}
         r = requests.post(path, json=payload)
+        print(payload)
         print(r.status_code)
         print(r.text)
 
     def get_gate(self, gate_id):
         path = "{}/gate/{}".format(self.gates_url, gate_id)
         logger.info("Getting information of gate {}: {}".format(gate_id, path))
-        r = requests.get
+        r = requests.get(path)
         print(r.status_code)
         print(r.text)
 
     def get_all_gates(self, status=None):
         path = "{}/gate?status={}".format(self.gates_url, "" if status is None else status)
         logger.info("Getting list of gates with {} status: {}".format("any" if status is None else status, path))
-        r = requests.get
+        r = requests.get(path)
         print(r.status_code)
         print(r.text)
 
@@ -258,6 +259,6 @@ class ADMClient(object):
     def delete_gate(self, gate_id):
         path = "{}/gate/{}".format(self.gates_url, gate_id)
         logger.info("Deleting gate {}: {}".format(gate_id, path))
-        r = requests.delete
+        r = requests.delete(path)
         print(r.status_code)
         print(r.text)

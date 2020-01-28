@@ -1,7 +1,6 @@
 import click
 import adm
 
-
 @click.group()
 def gates():
     """Manage the gates service"""
@@ -31,7 +30,7 @@ def get_gate(gates_url, gate_id):
 
 @gates.command()
 @click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
-@click.option('status', default=None, help='Use active or disabled to filter results on status')
+@click.option('--status', default=None, help='Use active or disabled to filter results on status')
 def get_all_gates(gates_url, status):
     """Get the list of all gates created filtering on status. If no status is passed it get all of them"""
     client = adm.ADMClient(gates_url=gates_url)

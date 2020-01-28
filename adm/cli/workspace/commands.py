@@ -7,7 +7,7 @@ def workspace():
     pass
 
 @workspace.command()
-@click.option('--workspace-url', default='http://api.localhost/v1', help='URL of the Fleet Service')
+@click.option('--workspace-url', default='http://api.zerinth.com/v1', help='URL of the Fleet Service')
 @click.argument('name')
 def create(workspace_url, name):
     """Create a workspace"""
@@ -15,7 +15,7 @@ def create(workspace_url, name):
     client.workspace_create(name)
     
 @workspace.command()
-@click.option('--workspace-url', default='http://api.localhost/v1', help='URL of the Fleet Service')
+@click.option('--workspace-url', default='http://api.zerinth.com/v1', help='URL of the Fleet Service')
 @click.argument('id')
 def get(workspace_url, id):
     """Get a workspace"""
@@ -23,7 +23,7 @@ def get(workspace_url, id):
     client.workspace_get(id)
 
 @workspace.command()
-@click.option('--workspace-url',default='http://api.localhost/v1', help='Fleet endpoint')
+@click.option('--workspace-url',default='http://api.zerinth.com/v1', help='Fleet endpoint')
 def all(workspace_url):
     """Get all the workspaces"""
     client = adm.ADMClient(workspace_url=workspace_url)
