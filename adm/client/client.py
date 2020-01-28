@@ -282,7 +282,7 @@ class ADMClient(object):
         print(r.text)
 
     def create_webhook(self, name, url, content_type, period):
-        path = "{}/gate/".format(self.gates_url)
+        path = "{}/gate/webhook".format(self.gates_url)
         logger.info("Creating a new webhook gate: {}".format(path))
         payload = {"name":name, "url":url, "content-type":content_type, "period":period}
         r = requests.post(path, json=payload)
@@ -304,10 +304,17 @@ class ADMClient(object):
         print(r.status_code)
         print(r.text)
 
-    def update_gate_status(self, gate_id, status):
+    def update_webhook(self, gate_id, status=None, period=None, url=None, content_type=None, tag=None, workspace_id=None, start=None, end=None, device_id=None, custom=None):
         path = "{}/gate/{}".format(self.gates_url, gate_id)
-        payload = {"status":status}
+        payload = {
+            "status": status if status is not None else None,
+            "period": period if period is not None else None,
+            "url": url if url is not None else None,
+            "content-type": content_type if content_type is not None else None,
+            "query-payload": {"tag": tag, "workspace_id":workspace_id, "start":start, "end":end, "device_id":device_id, "custom":custom}
+        }
         r = requests.put(path, json=payload)
+        print(payload)
         print(r.status_code)
         print(r.text)
 
