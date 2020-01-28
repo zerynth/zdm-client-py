@@ -1,4 +1,4 @@
-python data/examples/ingestion/device.py
+python data/examples/ingestion/deviceconf.py
 
 
 

@@ -50,7 +50,6 @@ class ADMClient(object):
     def create_device(self, name, fleetId=None):
         # if fleetid is None, the device is assigned to a default fleet of the account.
         payload = {"name": name, "fleet_id": None if fleetId is None else fleetId}
-        print(payload)
         path = "{}/device/".format(self.fleet_dev_url, fleetId)
         logger.info("Creating device {}: {}".format(name, path))
         r = requests.post(path, data=json.dumps(payload))
@@ -63,8 +62,8 @@ class ADMClient(object):
             raise NotFoundError(r.text)
 
     def get_device(self, id):
-        path = "{}/device/{}".format(self.fleet_dev_url, id)
-        logger.info("Getting the device {}".format(id))
+        path = "{}/device/{}/".format(self.fleet_dev_url, id)
+        logger.info("Getting the device {}".format(path))
         r = requests.get(path)
         if r.status_code == 200:
             data = r.json()
