@@ -7,7 +7,7 @@ def tsmanager():
     pass
 
 @tsmanager.command()
-@click.option('--tsmanager-url', default='http://api.zerinth.com/v1/tsmanager', help='URL of the TSManager service')
+@click.option('--tsmanager-url', default='http://api.localhost/v1/tsmanager', help='URL of the TSManager service')
 @click.argument('workspace_id')
 def create_workspace_table(tsmanager_url, workspace_id):
     """Create a workspace table"""

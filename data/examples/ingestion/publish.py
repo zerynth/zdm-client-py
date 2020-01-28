@@ -3,19 +3,21 @@ import random
 import time
 
 """
-Create a Device that sends messages to the ingestion queue of the ADM.
+Create a VirutalDevice that sends messages to the ingestion queue of the ADM.
 """
+
+# use the deviceconf.py script to obtain a device id
+DEVICE_ID = "dev-4mhjrccf53ib"
 
 NUM_MESSAGES = 100    # number of messages to send
 TAGS = ["caffe", "cibo", "bevande", "armadi",
         "case", "tutto"]  # tags where to publish
 NAMES= ["prova1", "prova2", "prova3", "prova4"]
 
-
-device = adm.Device("dev01", hostname="rmq.localhost",
+device = adm.Device(DEVICE_ID, hostname="rmq.localhost",
                     port=1883, user="admin", password="Z3rynthT3st")
-device.connect()
 
+device.connect()
 
 for x in range(NUM_MESSAGES):
     time.sleep(2)

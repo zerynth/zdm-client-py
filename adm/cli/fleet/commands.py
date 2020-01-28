@@ -9,10 +9,11 @@ def fleet():
 @fleet.command()
 @click.option('--fleet-url', default='http://api.zerinth.com/v1', help='URL of the Fleet Service')
 @click.argument('name')
-def create(fleet_url, name):
+@click.argument('workspaceid')
+def create(fleet_url, name, workspaceid):
     """Create a fleet"""
     client = adm.ADMClient(fleetdev_url=fleet_url)
-    client.create_fleet(name)
+    client.create_fleet(name, workspaceid)
     
 @fleet.command()
 @click.option('--fleet-url',default='http://api.zerinth.com/v1', help='Fleet endpoint')

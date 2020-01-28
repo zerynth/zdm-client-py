@@ -30,7 +30,7 @@ class Device():
     def publish_data(self, tag, payload):
         """ Publish into the ingestion queue on the tag TAG wih the PAYLOAD"""
         topic = self.build_ingestion_topic(self.id, tag)
-       #payload['deviceid'] = self.id
+        #payload['deviceid'] = self.id
         self.mqqt.publish(topic, payload, qos=1)
 
     def publish_up(self, payload):

@@ -7,7 +7,7 @@ def account():
     pass
 
 @account.command()
-@click.option('--accounts-url', default='http://127.0.0.1:8001', help='URL of the Account Service')
+@click.option('--accounts-url', default='http://api.localhost/v1', help='URL of the Account Service')
 @click.argument('name')
 @click.argument('password')
 @click.argument('email')
