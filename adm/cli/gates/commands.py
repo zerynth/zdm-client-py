@@ -13,10 +13,16 @@ def gates():
 @click.argument('url')
 @click.argument('content_type')
 @click.argument('period')
-def create_webhook(gates_url, name, url, content_type, period):
+@click.argument('tag')
+@click.argument('workspace_id')
+@click.option('--start', default=None, help='starting time for the query to tsmanager')
+@click.option('--end', default=None, help='end time for the query to tsmanager')
+@click.option('--device_id', default=None, help='device id for the query to tsmanager')
+@click.option('--custom', default=None, help='custom query fields for the query to tsmanager')
+def create_webhook(gates_url, name, url, content_type, period, tag, workspace_id, start, end, device_id, custom):
     """Create a webhook gate"""
     client = adm.ADMClient(gates_url=gates_url)
-    client.create_webhook(name, url, content_type, period)
+    client.create_webhook(name, url, content_type, period, tag, workspace_id, start, end, device_id, custom)
 
 
 @gates.command()
@@ -39,8 +45,8 @@ def get_all_gates(gates_url, status):
 @gates.command()
 @click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
 @click.argument('gate_id')
-@click.argument('tag', default=None, help='the tag for the query to tsmanager')
-@click.argument('workspace_id', default=None, help='workspaceid for the query to tsmanager')
+@click.option('--tag', default=None, help="the new tag")
+@click.option('--workspace_id', default=None, help="the new workspace_id")
 @click.option('--status', default=None, help='the new status for the web hook')
 @click.option('--period', default=None, help='the new period for the web hook')
 @click.option('--url', default=None, help='the new url for the web hook')
