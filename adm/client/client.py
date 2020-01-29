@@ -312,9 +312,10 @@ class ADMClient(object):
         print(r.status_code)
         print(r.text)
 
-    def update_webhook(self, gate_id, status=None, period=None, url=None, content_type=None, tag=None, workspace_id=None, start=None, end=None, device_id=None, custom=None):
+    def update_webhook(self, gate_id, name=None, status=None, period=None, url=None, content_type=None, tag=None, workspace_id=None, start=None, end=None, device_id=None, custom=None):
         path = "{}/gate/{}".format(self.gates_url, gate_id)
         payload = {
+            "name":name if name is not None else None,
             "status": status if status is not None else None,
             "period": period if period is not None else None,
             "url": url if url is not None else None,

@@ -45,6 +45,7 @@ def get_all_gates(gates_url, status):
 @gates.command()
 @click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
 @click.argument('gate_id')
+@click.option('--name', default=None, help="the new name for the gate")
 @click.option('--tag', default=None, help="the new tag")
 @click.option('--workspace_id', default=None, help="the new workspace_id")
 @click.option('--status', default=None, help='the new status for the web hook')
@@ -55,11 +56,11 @@ def get_all_gates(gates_url, status):
 @click.option('--end', default=None, help='end time for the query to tsmanager')
 @click.option('--device_id', default=None, help='device id for the query to tsmanager')
 @click.option('--custom', default=None, help='custom query fields for the query to tsmanager')
-def update_webhook(gates_url, gate_id, status, period, url, content_type, tag, workspace_id, start, end, device_id, custom):
+def update_webhook(gates_url, gate_id, name, status, period, url, content_type, tag, workspace_id, start, end, device_id, custom):
     """Update a web hook (status, period, url, content-type, query-string"""
     print(status)
     client = adm.ADMClient(gates_url=gates_url)
-    client.update_webhook(gate_id, status, period, url, content_type, tag, workspace_id, start, end, device_id, custom)
+    client.update_webhook(gate_id, name, status, period, url, content_type, tag, workspace_id, start, end, device_id, custom)
 
 @gates.command()
 @click.option('--gates-url', default='http://api.zerinth.com/v1', help='URL of the gates service')
