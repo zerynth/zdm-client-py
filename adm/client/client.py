@@ -18,14 +18,13 @@ class ADMClient(object):
     
     """
 
-
-    def __init__(self, rpc_url="http://127.0.0.1:7777", 
-                fleetdev_url="http://127.0.0.1:8000", 
-                accounts_url="http://127.0.0.1:8001", 
-                workspace_url="http://127.0.0.1:8001",
-                status_url="http://127.0.0.1:8002",
-                tsmanager_url="http://127.0.0.1:8005",
-                gates_url="http://127.0.0.1:8007"):
+    def __init__(self, rpc_url="http://127.0.0.1:7777",
+                 fleetdev_url="http://127.0.0.1:8000",
+                 accounts_url="http://127.0.0.1:8001",
+                 workspace_url="http://127.0.0.1:8001",
+                 status_url="http://127.0.0.1:8002",
+                 tsmanager_url="http://127.0.0.1:8005",
+                 gates_url="http://127.0.0.1:8007"):
         self.rpc_url = rpc_url
         self.fleet_dev_url = fleetdev_url
         self.accounts_url = accounts_url
@@ -73,7 +72,6 @@ class ADMClient(object):
             logger.error("Error in getting the device {}")
             raise NotFoundError(r.text)
 
-
     def update_device_fleet(self, device_id, name, fleet_id):
         path = "{}/device/{}".format(self.fleet_dev_url, device_id)
         logger.info("Updating device {}: path".format(device_id, path))
@@ -100,9 +98,8 @@ class ADMClient(object):
             logger.error("Error in getting the workspace of a device {}".format(r.text))
             raise NotFoundError(r.text)
 
-
     def create_fleet(self, name, workspace_id):
-        payload = {"Name": name, "workspace_id":workspace_id}
+        payload = {"Name": name, "workspace_id": workspace_id}
         path = "{}/fleet/".format(self.fleet_dev_url)
         logger.debug("Path create fleet: {}".format(path))
         logger.info("Creating fleet: {}".format(name))
@@ -113,7 +110,6 @@ class ADMClient(object):
         else:
             logger.error("Error in getting the workspace {}".format(r.text))
             raise NotFoundError(r.text)
-
 
     def get_fleets(self):
         path = "{}/fleet".format(self.fleet_dev_url)
@@ -134,11 +130,10 @@ class ADMClient(object):
             logger.error("Error in getting the fleet {}")
             raise NotFoundError(r.text)
 
-
-    def register(self, name, password, email):
+    def add_account(self, name, password, email):
         path = "{}/account".format(self.accounts_url)
         logger.info("Registering an account: {}".format(path))
-        payload = {"name": name, "password": password, "mail": email}
+        payload = {"name": name, "password": password, "email": email}
         r = requests.post(path, data=json.dumps(payload))
         if r.status_code == 200:
             logger.info("Account registered correctly")
@@ -148,7 +143,7 @@ class ADMClient(object):
             return False
 
     def account_login(self, email, password):
-        path = "{}/account/login/{}/{}".format(self.accounts_url, email, password)
+        path = "{}/account/login?email={}&password={}".format(self.accounts_url, email, password)
         logger.info("Login a account: {}".format(path))
         r = requests.get(path)
         print(r.status_code)
@@ -164,7 +159,7 @@ class ADMClient(object):
     def add_user(self, account_id, name, password, email):
         path = "{}/account/{}/user".format(self.accounts_url, account_id)
         logger.info("Adding user {} to account {}: {}".format(name, account_id, path))
-        payload = {"name": name, "password": password, "mail": email}
+        payload = {"name": name, "password": password, "email": email}
         r = requests.post(path, json=payload)
         print(r.status_code)
         print(r.text)
@@ -177,7 +172,7 @@ class ADMClient(object):
         print(r.text)
 
     def user_login(self, email, password):
-        path = "{}/user/login/{}/{}".format(self.accounts_url, email, password)
+        path = "{}/account/login/user?email={}&password={}".format(self.accounts_url, email, password)
         logger.info("Login an user: {}".format(path))
         r = requests.get(path)
         print(r.status_code)
@@ -281,17 +276,18 @@ class ADMClient(object):
         print(r.status_code)
         print(r.text)
 
-    def create_webhook(self, name, url, content_type, period, tag=None, workspace_id=None, start=None, end=None, device_id=None, custom=None):
+    def create_webhook(self, name, url, content_type, period, tag=None, workspace_id=None, start=None, end=None,
+                       device_id=None, custom=None):
         path = "{}/gate/webhook".format(self.gates_url)
         logger.info("Creating a new webhook gate: {}".format(path))
-        payload = {"name":name, "url":url, "content-type":content_type, "period":period,
-                        "query-payload": {
-                            "tag": tag,
-                            "workspace_id":workspace_id,
-                            "start":start, "end":end,
-                            "device_id":device_id,
-                            "custom":custom
-                        }
+        payload = {"name": name, "url": url, "content-type": content_type, "period": period,
+                   "query-payload": {
+                       "tag": tag,
+                       "workspace_id": workspace_id,
+                       "start": start, "end": end,
+                       "device_id": device_id,
+                       "custom": custom
+                   }
                    }
         r = requests.post(path, json=payload)
         print(payload)
@@ -312,15 +308,17 @@ class ADMClient(object):
         print(r.status_code)
         print(r.text)
 
-    def update_webhook(self, gate_id, name=None, status=None, period=None, url=None, content_type=None, tag=None, workspace_id=None, start=None, end=None, device_id=None, custom=None):
+    def update_webhook(self, gate_id, name=None, status=None, period=None, url=None, content_type=None, tag=None,
+                       workspace_id=None, start=None, end=None, device_id=None, custom=None):
         path = "{}/gate/{}".format(self.gates_url, gate_id)
         payload = {
-            "name":name if name is not None else None,
+            "name": name if name is not None else None,
             "status": status if status is not None else None,
             "period": period if period is not None else None,
             "url": url if url is not None else None,
             "content-type": content_type if content_type is not None else None,
-            "query-payload": {"tag": tag, "workspace_id":workspace_id, "start":start, "end":end, "device_id":device_id, "custom":custom}
+            "query-payload": {"tag": tag, "workspace_id": workspace_id, "start": start, "end": end,
+                              "device_id": device_id, "custom": custom}
         }
         r = requests.put(path, json=payload)
         print(payload)
