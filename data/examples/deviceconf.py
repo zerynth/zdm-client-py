@@ -33,7 +33,7 @@ print("Belong to fleet: {}".format(fleet.id))
 print("Belong to workspace: {}".format(workspace.id))
 
 # provision with a symmetric key
-# ❯ curl -d '{"name":"prova"}' POST http://api.zerinth.com/v1/device/dev-4m2vxgc5k935/key
+# curl -d '{"name":"prova"}' POST http://api.zerinth.com/v1/device/dev-4m2vxgc5k935/key
 # key = POST http://api.zerinth.com/v1/device/dev-4m2vxgc5k935/key {"name":"prova"}
 # key.id
 # key.raw
