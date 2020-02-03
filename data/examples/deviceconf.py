@@ -32,7 +32,11 @@ print("Device id: {}".format(device.id))
 print("Belong to fleet: {}".format(fleet.id))
 print("Belong to workspace: {}".format(workspace.id))
 
-## provision with a symmetric key
-
-print("JWT {}".format(device.encode_jwt(auth_keyid=DEVICE_AUTHKEY_ID, secret=DEVICE_SECRET, exp=DEVICE_AUTHKEY_EXPIRATION)))
-
+# provision with a symmetric key
+# ❯ curl -d '{"name":"prova"}' POST http://api.zerinth.com/v1/device/dev-4m2vxgc5k935/key
+# key = POST http://api.zerinth.com/v1/device/dev-4m2vxgc5k935/key {"name":"prova"}
+# key.id
+# key.raw
+# exp =  '09/19/18 13:55:26'
+# jwt = device.encode_jwt(auth_keyid=key.id, secret=key.raw, exp=DEVICE_AUTHKEY_EXPIRATION)))
+# jwt is the password for the device

@@ -32,6 +32,8 @@ class Device:
     def id(self):
         return self.uuid
 
+
+
     def encode_password_as_jwt(self, auth_keyid, secret, exp_str=None):
         """
         :param auth_keyid: the id of the authentication key in the database
