@@ -8,33 +8,43 @@ logger = MyLogger().get_logger()
 
 class MQTTClient(object):
 
-    def __init__(self, hostname="localhost", port=1883, user="admin", password="Z3rynthT3st"):
+    def __init__(self, hostname="localhost", user="admin", password="Z3rynthT3st",port=1883):
         self.hostname = hostname
         self.port = port
-        self.mqttc = mqtt.Client()
+        self.user = user
+        self.password = password
+
+        logger.debug("Creating clinet")
+        self.mqttc = mqtt.Client(client_id=user)
+
         self.mqttc.username_pw_set(username=user, password=password)
 
         self.mqttc.on_connect = self.on_connect
+        self.mqttc.on_disconnect = self.on_disconnect
         self.mqttc.on_message = self.on_message
+        self.mqttc.on_publish = self.on_publish
+
+    def on_disconnect(client, userdata, rc):
+        logger.info("DISCONNECTED {}".format(client))
 
     def connect(self):
-        logger.debug("Connecting to {}:{}.".format(self.hostname, self.port))
+        logger.info("Connecting to {} {} ".format(self.hostname, self.port))
         self.mqttc.connect(self.hostname, self.port, 60)
+        # logger.debug("Connected to {}:{}. user:{}, password:{}".format(self.hostname, self.port, self.user, self.password))
 
-    def publish(self, topic, payload=None, qos=0):
-        # print("publishing {} into {}".format(payload,  topic))
+    def publish(self, topic, payload=None, qos=1):
         if type(payload) is dict:
             payload = json.dumps(payload)
         self.mqttc.publish(topic, payload, qos)
-        logger.info("Publish on Topic: {}, Data:{}".format(topic, payload))
+        # logger.info("Publish on Topic: {}, Data:{}".format(topic, payload))
 
-    # The callback for when the client receives a CONNACK response from the server.
-    def on_connect(self, client, userdata, flags, rc):
-        logger.info("Connected succesfully with code:{}.".format(str(rc)))
+    def on_connect(self,vclient, userdata, flags, rc):
+        logger.info("Connected succesfully with code: {}.".format(str(rc)))
 
-    # The callback for when a PUBLISH message is received from the server.
+    def on_publish(self, client, userdata, mid):
+        logger.info("Msg published from {} succesfully. {}. mid {}".format(client, userdata, mid))
 
-    def on_message(self, client, userdata, msg):
+    def on_message(client, userdata, msg):
         logger.info("Message received from topic: {}, data:{}".format(
             msg.topic, str(msg.payload)))
 

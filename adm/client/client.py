@@ -11,7 +11,7 @@ logger = MyLogger().get_logger()
 
 class ADMClient(object):
     """
-    A client for communicating with a ADM server.
+    A client for communicating with the API of ADM.
     Example:
         >>> import adm
         >>> client = adm.ADMClient(rpc_url="http://127.0.0.1:8000")

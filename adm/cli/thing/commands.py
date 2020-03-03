@@ -17,7 +17,7 @@ def device():
 @click.argument('message')
 def publish(device_id, mqtt_hostname, mqtt_port, mqtt_user, mqtt_password, count, message):
     """Create a device and publish messages into ADM ingestion"""
-    device = adm.Device(device_id, hostname=mqtt_hostname, port=mqtt_port, user=mqtt_user, password=mqtt_password)
+    device = adm.VirtualDevice(device_id, hostname=mqtt_hostname, port=mqtt_port, user=mqtt_user, password=mqtt_password)
     device.connect()
 
     # Publish message into the topic "data/<devid>"

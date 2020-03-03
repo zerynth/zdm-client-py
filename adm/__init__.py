@@ -1,5 +1,5 @@
 
-from .device.device import Device
+from .device.virtualdevice import VirtualDevice
 
 from .client.client import ADMClient
 

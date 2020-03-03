@@ -29,7 +29,7 @@ def get(fleet_url, id):
     client = adm.ADMClient(fleetdev_url=fleet_url)
     client.get_device(id)
 
-
+    client = adm.ADMClient(fleetdev_url=fleet_url)
 @device.command()
 @click.option('--fleet-url', default='http://api.zerinth.com/v1', help='Fleet endpoint')
 @click.argument('id')
