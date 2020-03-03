@@ -3,7 +3,7 @@ import adm
 # client = adm.ADMClient(fleetdev_url="http://api.zerinth.com/v1",
 #                        workspace_url="http://api.zerinth.com/v1")
 
-ADM_URL = "http://api.localhost/v1"
+ADM_URL = "https://api.adm.zerinth.com/v1"
 
 client = adm.ADMClient(fleetdev_url=ADM_URL, workspace_url=ADM_URL)
 
