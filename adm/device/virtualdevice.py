@@ -68,7 +68,8 @@ class VirtualDevice:
 
             method = payload["key"]
             value = payload["value"]
-            args = value["args"]
+            if "args" in value:
+                args = value["args"]
 
             if method.startswith('@'):
                 method = method[1:]
