@@ -2,72 +2,62 @@ import json
 
 from .mqtt import MQTTClient
 from ..logging import MyLogger
-
+import time
 logger = MyLogger().get_logger()
 
+
 class VirtualDevice:
-
-    def __init__(self, uuid, username, password, hostname="localhost", port=1883, rpc=None):
-        self.uuid = uuid
+    def __init__(self, mqtt_id, rpc=None):
+        self.mqtt_id = mqtt_id
         self.rpc = rpc
+        self.mqttClient = MQTTClient(mqtt_id=mqtt_id)
 
-        if uuid != username:
-            raise Exception("The Device id must be equal to the MQTT username. Given {},{}", uuid, username)
-
-        logger.info("User: {}".format(username))
-        logger.info("Password: {}".format(password))
-
-        self.mqtt = MQTTClient(hostname, username, password,  port)
-
-        self.topic_data = "j/data"  # topic for the ingestion queue
-        self.topic_up = "j/up/"     # topic for the up queue
-        self.topic_down = "j/dn/#"  # topic for the down queue
-
-    def connect(self):
-        self.mqtt.connect()
-        self.subscribe_down()  # subscribe to the down queue to receive data from the adm cloud
+        self.data_topic = '/'.join(['j', 'data', mqtt_id])
+        self.up_topic = '/'.join(['j', 'up', mqtt_id])
+        self.dn_topic = '/'.join(['j', 'dn', mqtt_id])
 
     def connect(self):
         for _ in range(5):
             try:
-                logger.info("Trying to connect...")
-                self.mqtt.connect()
-                self.mqtt.loop()
+                print("VirtualDevice.connect attempt")
+                self.mqttClient.connect(host='rmq.adm.zerinth.com')
                 break
             except Exception as e:
-                print("Virtual device", e)
+                print("VirtualDevice.connect", e)
                 pass
-        else:
-            raise IOError
-        self._config()
+        time.sleep(2)
+        if not self.mqttClient.connected:
+            raise Exception("Failed to connect")
 
-    def _config(self):
         self.subscribe_down()
 
-    @property
+    def subscribe_down(self):
+        self.mqttClient.subscribe(self.dn_topic, callback=self.handle_dn_msg)
+
     def id(self):
-        return self.uuid
+        return self.mqtt_id
+
+    def send_manifest(self):
+        payload = {
+            'key': '__manifest',
+            'value': [k for k in self.rpc]
+        }
+        self.mqttClient.publish(self.up_topic, json.dumps(payload))
+
+    def set_password(self, pw):
+        self.mqttClient.set_username_pw(self.mqtt_id, pw)
 
     def publish_data(self, tag, payload):
         """ Publish into the ingestion queue on the tag TAG wih the PAYLOAD"""
-        topic = self.build_ingestion_topic(self.id, tag)
-        self.mqtt.publish(topic, payload, qos=1)
-
+        topic = self.build_ingestion_topic(tag)
+        self.mqttClient.publish(topic, payload)
 
     def publish_up(self, payload):
-        topic = self.topic_up + self.uuid
-        self.mqtt.publish(topic, payload)
+        topic = self.up_topic
+        self.mqttClient.publish(topic, payload)
 
-
-    def subscribe_down(self):
-        self.mqtt.subscribe(self.topic_down, qos=1)
-        self.mqtt.mqttc.message_callback_add(
-            self.topic_down, self._on_message_down_queuue)
-
-    def _on_message_down_queuue(self, client, userdata, msg):
+    def handle_dn_msg(self, client, data, msg):
         payload = json.loads(msg.payload)
-        logger.info("[{}] received from topic: {}, payload: {}".format(
-            self.id, msg.topic, str(payload)))
         try:
             if "key" not in payload:
                 raise Exception(
@@ -75,32 +65,45 @@ class VirtualDevice:
             if "value" not in payload:
                 raise Exception(
                     "The value  is not present into the RPC payload {}".format(payload))
-                # if "args" not in payload:
-                #    raise Exception(
-                #        "The key 'args' is not present into the RPC payload {}".format(payload))
-            if payload["key"] == "rpc":
-                result = self.rpc[payload['method']](self, payload["args"])
 
+            method = payload["key"]
+            value = payload["value"]
+            args = value["args"]
+
+            if method.startswith('@'):
+                method = method[1:]
+
+            if method in self.rpc:
+                result = self.rpc[method](self, args)
                 logger.info("[{}] rpc {} executed with result res:{} ".format(
-                    self.id, payload['method'], result))
+                    self.id, method, result))
+
                 rpc_response = {
-                    "rpc": payload["rpc"],
-                    "method": payload["method"],
-                    "args": payload["args"],
-                    "status": "done",
-                    "result": result
+                    "key": "@" + method,
+                    "value": {"status": "done", "result": result}
                 }
+
                 self.publish_up(json.dumps(rpc_response))
             else:
-                raise Exception(
-                    "BAd format key ".format(payload))
+                logger.info("[{}] rpc {} not supported ".format(
+                    self.id, method))
+
+                rpc_response = {
+                    "key": "@" + method,
+                    "value": {"status": "failed", "message": "method not supported"}
+                }
+
+                self.publish_up(json.dumps(rpc_response))
 
         except Exception as e:
             logger.error("Error", e)
 
-    def build_ingestion_topic(self, device_id, tag):
+    def build_ingestion_topic(self, tag):
         """ build the topic for the ingestion
         ex.  data/<deviceid>/<TAG>/
 
         """
-        return "{}/{}/{}/".format(self.topic_data, device_id, tag)
+        return '/'.join([self.data_topic, tag])
+
+    def start_loop(self):
+        self.mqttClient.loop()

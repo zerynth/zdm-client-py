@@ -6,51 +6,60 @@ from ..logging import MyLogger
 logger = MyLogger().get_logger()
 
 
-class MQTTClient(object):
+class MQTTClient:
 
-    def __init__(self, hostname="localhost", user="admin", password="Z3rynthT3st",port=1883):
-        self.hostname = hostname
-        self.port = port
-        self.user = user
-        self.password = password
+    def __init__(self, mqtt_id, ssl_ctx=None):
+        self.client = mqtt.Client(mqtt_id)
+        self.ssl_ctx = ssl_ctx
 
-        logger.debug("Creating clinet")
-        self.mqttc = mqtt.Client(client_id=user)
+        self.client.on_connect = self.on_connect
+        self.client.on_disconnect = self.on_disconnect
+        self.client.on_message = self.on_message
+        self.client.on_publish = self.on_publish
 
-        self.mqttc.username_pw_set(username=user, password=password)
+        self.connected = False
 
-        self.mqttc.on_connect = self.on_connect
-        self.mqttc.on_disconnect = self.on_disconnect
-        self.mqttc.on_message = self.on_message
-        self.mqttc.on_publish = self.on_publish
+    def set_username_pw(self, username, password):
+        self.client.username_pw_set(username=username, password=password)
 
-    def on_disconnect(client, userdata, rc):
-        logger.info("DISCONNECTED {}".format(client))
+    def connect(self, host, port=1883):
+        self.client.connect(host, port=port)
+        self.client.loop_start()
+        logger.info("Connecting to: {}:{}".format(host, port))
 
-    def connect(self):
-        logger.info("Connecting to {} {} ".format(self.hostname, self.port))
-        self.mqttc.connect(self.hostname, self.port, 60)
-        # logger.debug("Connected to {}:{}. user:{}, password:{}".format(self.hostname, self.port, self.user, self.password))
+    def on_connect(self, client, userdata, flags, rc):
+        print("on_connect")
+        self.connected = True
+        if rc == 0:
+            print("connected OK Returned code=", rc)
+        else:
+            print("Bad connection Returned code=", rc)
+
+    def on_disconnect(self, client, userdata, rc):
+        print("Unexpected disconnection.")
+        self.client.loop_stop()
 
     def publish(self, topic, payload=None, qos=1):
         if type(payload) is dict:
             payload = json.dumps(payload)
-        self.mqttc.publish(topic, payload, qos)
-        # logger.info("Publish on Topic: {}, Data:{}".format(topic, payload))
-
-    def on_connect(self,vclient, userdata, flags, rc):
-        logger.info("Connected succesfully with code: {}.".format(str(rc)))
+        try:
+            self.client.publish(topic, payload, qos=qos)
+            logger.info("Msg published to topic: {}".format(topic))
+        except Exception as e:
+            print("Error" + e)
 
     def on_publish(self, client, userdata, mid):
         logger.info("Msg published from {} succesfully. {}. mid {}".format(client, userdata, mid))
 
     def on_message(client, userdata, msg):
-        logger.info("Message received from topic: {}, data:{}".format(
-            msg.topic, str(msg.payload)))
+        logger.info("Message received: {}".format(msg))
 
-    def subscribe(self, topic, qos=0):
-        self.mqttc.subscribe(topic, qos)
-        logger.info("Subscried to topic: {}".format(topic))
+    def subscribe(self, topic, callback=None, qos=1):
+        self.client.subscribe(topic=topic, qos=qos)
+        logger.info("Subscribed to topic: {}".format(topic))
+
+        if callback:
+            self.client.message_callback_add(topic, callback)
 
     def loop(self):
-        self.mqttc.loop_forever()
+        self.client.loop_forever()
