@@ -18,8 +18,8 @@ custom_rpc = {
     "set_led": set_led,
 }
 
-device_id = 'dev-4pnefulyx2bn'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXYtNHBuZWZ1bHl4MmJuIiwidXNlciI6ImRldi00cG5lZnVseXgyYm4iLCJrZXkiOjEsImV4cCI6MTkxNjIzOTAyMn0.SRB9I0zAcIqor93I_NstiYUYFu9rfQrPpwRJVvi1y74'
+device_id = 'DeviceId'
+password = 'DevicePassword'
 
 device = VirtualDevice(mqtt_id=device_id, rpc=custom_rpc)
 device.set_password(password)
