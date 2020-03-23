@@ -20,7 +20,7 @@ class VirtualDevice:
         for _ in range(5):
             try:
                 print("VirtualDevice.connect attempt")
-                self.mqttClient.connect(host='rmq.adm.zerinth.com')
+                self.mqttClient.connect(host='rmq.zdm.stage.zerynth.com')
                 break
             except Exception as e:
                 print("VirtualDevice.connect", e)
