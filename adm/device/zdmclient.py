@@ -32,7 +32,7 @@ class ZDMClient:
 
     def connect(self):
         """
-.. method:: connect()
+        .. method:: connect()
         Connect your device to the ZDM. You must set device's password first. It also enable your device to receive incoming messages.
         """
         for _ in range(5):
@@ -73,14 +73,14 @@ class ZDMClient:
 
     def set_password(self, pw):
         """
-.. method:: set_password(pw)
+        .. method:: set_password(pw)
         Set the device password to :samp:'pw'. You can generate a password using the ZDM, creating a key for your device
         """
         self.mqttClient.set_username_pw(self.mqtt_id, pw)
 
     def publish_data(self, tag, payload):
         """
-.. method:: publish_data(tag, payload)
+        .. method:: publish_data(tag, payload)
         Publish a message to the ZDM.
         * :samp:`tag`, is a label for the device's data into your workspace. More than one device can publish message to the same tag
         * :samp:`payload` is the message payload, represented by a dictionary

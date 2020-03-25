@@ -1,0 +1,8 @@
+{
+	"version":"1.0.0",
+	"title":"Zerynth ZDM Client",
+	"copyright":"Zerynth Team",
+	"files":[
+		["ZDM Client","adm/device/zdmclient.py"]
+	]
+}
