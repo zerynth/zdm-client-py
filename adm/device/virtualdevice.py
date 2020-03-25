@@ -3,13 +3,14 @@ import json
 from .mqtt import MQTTClient
 from ..logging import MyLogger
 import time
+
 logger = MyLogger().get_logger()
 
 
 class VirtualDevice:
-    def __init__(self, mqtt_id, rpc=None):
+    def __init__(self, mqtt_id, job=None):
         self.mqtt_id = mqtt_id
-        self.rpc = rpc
+        self.jobs = job
         self.mqttClient = MQTTClient(mqtt_id=mqtt_id)
 
         self.data_topic = '/'.join(['j', 'data', mqtt_id])
@@ -30,9 +31,18 @@ class VirtualDevice:
             raise Exception("Failed to connect")
 
         self.subscribe_down()
+        self.request_status()
 
     def subscribe_down(self):
         self.mqttClient.subscribe(self.dn_topic, callback=self.handle_dn_msg)
+
+    def request_status(self):
+        msg = {
+            'key': '#status',
+            'value': {}
+        }
+        self.publish_up(msg)
+        logger.info("Status requested")
 
     def id(self):
         return self.mqtt_id
@@ -40,7 +50,7 @@ class VirtualDevice:
     def send_manifest(self):
         payload = {
             'key': '__manifest',
-            'value': [k for k in self.rpc]
+            'value': [k for k in self.jobs]
         }
         self.mqttClient.publish(self.up_topic, json.dumps(payload))
 
@@ -56,45 +66,78 @@ class VirtualDevice:
         topic = self.up_topic
         self.mqttClient.publish(topic, payload)
 
+    def handle_delta_status(self, arg):
+        print("zlib_zdm.Device.handle_delta_status received status delta")
+
+        if ('expected' in arg) and (arg['expected'] is not None):
+            if '@fota' in arg['expected']:
+               print("fota not supported")
+
+            else:
+                # handle other keys
+                for expected_key in arg['expected']:
+                    value = arg['expected'][expected_key]['v']
+
+                    if expected_key[0] == '@':
+                        if expected_key[1:] in self.jobs:
+                            try:
+                                res = self.jobs[expected_key[1:]](self, arg)
+                                logger.info("job {} executed. Result: {}".format(expected_key[1:], res))
+                                job_response = {
+                                    "key": expected_key,
+                                    "value": {"status": "done", "result": res}
+                                }
+                                self.publish_up(json.dumps(job_response))
+                            except Exception as e:
+                                print("zlib_zdm.Device.handle_job_request", e)
+                                res = 'exception'
+
+            self.send_manifest()
+
     def handle_dn_msg(self, client, data, msg):
         payload = json.loads(msg.payload)
         try:
             if "key" not in payload:
                 raise Exception(
-                    "The key  is not present into the RPC payload {}".format(payload))
+                    "The key  is not present into the job payload {}".format(payload))
             if "value" not in payload:
                 raise Exception(
-                    "The value  is not present into the RPC payload {}".format(payload))
+                    "The value  is not present into the job payload {}".format(payload))
 
             method = payload["key"]
             value = payload["value"]
             if "args" in value:
                 args = value["args"]
+            else:
+                args = ""
 
             if method.startswith('@'):
                 method = method[1:]
+                if method in self.jobs:
+                    result = self.jobs[method](self, args)
+                    logger.info("[{}] job {} executed with result res:{} ".format(
+                        self.id, method, result))
 
-            if method in self.rpc:
-                result = self.rpc[method](self, args)
-                logger.info("[{}] rpc {} executed with result res:{} ".format(
-                    self.id, method, result))
+                    job_response = {
+                        "key": "@" + method,
+                        "value": {"status": "done", "result": result}
+                    }
 
-                rpc_response = {
-                    "key": "@" + method,
-                    "value": {"status": "done", "result": result}
-                }
+                    self.publish_up(json.dumps(job_response))
 
-                self.publish_up(json.dumps(rpc_response))
+            elif method.startswith('#'):
+                self.handle_delta_status(payload['value'])
+
             else:
-                logger.info("[{}] rpc {} not supported ".format(
+                logger.info("[{}] job {} not supported ".format(
                     self.id, method))
 
-                rpc_response = {
+                job_response = {
                     "key": "@" + method,
                     "value": {"status": "failed", "message": "method not supported"}
                 }
 
-                self.publish_up(json.dumps(rpc_response))
+                self.publish_up(json.dumps(job_response))
 
         except Exception as e:
             logger.error("Error", e)
