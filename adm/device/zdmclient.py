@@ -1,3 +1,16 @@
+"""
+.. module:: zerynthzdmclient
+
+.. _lib.zerynth.zdmclient:
+
+**********************
+Zerynth ZDM Client Lib
+**********************
+
+The Zerynth ZDM Client can be used to emulate a Zerynth device and connect it to the ZDM.
+
+    """
+
 import json
 
 from .mqtt import MQTTClient
@@ -7,7 +20,7 @@ import time
 logger = MyLogger().get_logger()
 
 
-class VirtualDevice:
+class ZDMClient:
     def __init__(self, mqtt_id, job=None):
         self.mqtt_id = mqtt_id
         self.jobs = job
@@ -18,13 +31,17 @@ class VirtualDevice:
         self.dn_topic = '/'.join(['j', 'dn', mqtt_id])
 
     def connect(self):
+        """
+.. method:: connect()
+        Connect your device to the ZDM. You must set device's password first. It also enable your device to receive incoming messages.
+        """
         for _ in range(5):
             try:
-                print("VirtualDevice.connect attempt")
+                print("ZDMCient.connect attempt")
                 self.mqttClient.connect(host='rmq.zdm.stage.zerynth.com')
                 break
             except Exception as e:
-                print("VirtualDevice.connect", e)
+                print("ZDMClient.connect", e)
                 pass
         time.sleep(2)
         if not self.mqttClient.connected:
@@ -55,10 +72,19 @@ class VirtualDevice:
         self.mqttClient.publish(self.up_topic, json.dumps(payload))
 
     def set_password(self, pw):
+        """
+.. method:: set_password(pw)
+        Set the device password to :samp:'pw'. You can generate a password using the ZDM, creating a key for your device
+        """
         self.mqttClient.set_username_pw(self.mqtt_id, pw)
 
     def publish_data(self, tag, payload):
-        """ Publish into the ingestion queue on the tag TAG wih the PAYLOAD"""
+        """
+.. method:: publish_data(tag, payload)
+        Publish a message to the ZDM.
+        * :samp:`tag`, is a label for the device's data into your workspace. More than one device can publish message to the same tag
+        * :samp:`payload` is the message payload, represented by a dictionary
+        """
         topic = self.build_ingestion_topic(tag)
         self.mqttClient.publish(topic, payload)
 

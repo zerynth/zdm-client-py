@@ -1,2 +1,2 @@
 
-from .device.virtualdevice import VirtualDevice
+from .device.zdmclient import ZDMClient

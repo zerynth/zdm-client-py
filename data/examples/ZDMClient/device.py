@@ -1,7 +1,7 @@
 import json
 import random
 import time
-from adm import VirtualDevice
+from adm import ZDMClient
 
 
 # Job function for on/off a led
@@ -21,7 +21,7 @@ custom_jobs = {
 device_id = 'dev-4rq2qzng6p09'
 password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiZGV2LTRycTJxem5nNnAwOSIsInN1YiI6ImRldi00cnEycXpuZzZwMDkiLCJrZXkiOjEsImV4cCI6MTU4NzYzNjU5Mn0.lkpvNxPS_KavA4voDpxcxfPDqdDGCgdKl8rp3pjypx0'
 
-device = VirtualDevice(mqtt_id=device_id, job=custom_jobs)
+device = ZDMClient(mqtt_id=device_id, job=custom_jobs)
 device.set_password(password)
 device.connect()
 
