@@ -82,7 +82,7 @@ The ZDMClient class
         """
     .. method:: set_password(pw)
 
-        Set the device password to :samp:'pw'. You can generate a password using the ZDM, creating a key for your device
+        Set the device password to :samp:`pw`. You can generate a password using the ZDM, creating a key for your device
         """
         self.mqttClient.set_username_pw(self.mqtt_id, pw)
 
