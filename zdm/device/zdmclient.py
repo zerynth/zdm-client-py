@@ -4,41 +4,69 @@
 .. _lib.zerynth.zdmclient:
 
 **********************
-Zerynth ZDM Client Lib
+ZDM Client Python
 **********************
 
-The Zerynth ZDM Client can be used to emulate a Zerynth device and connect it to the ZDM.
+The Zerynth ZDM Client is a Python implementation of a client of the ZDM.
+It can be used to emulate a Zerynth device and connect it to the ZDM.
 
     """
 
 import json
+import time
 
 from .mqtt import MQTTClient
 from ..logging import MyLogger
-import time
 
 logger = MyLogger().get_logger()
 
+ENDPOINT = "rmq.zdm.zerynth.com"
+PORT = 1883
+
 
 class ZDMClient:
-    def __init__(self, mqtt_id, job=None):
-        self.mqtt_id = mqtt_id
-        self.jobs = job
-        self.mqttClient = MQTTClient(mqtt_id=mqtt_id)
+    """
+================
+The ZDMClient class
+================
 
-        self.data_topic = '/'.join(['j', 'data', mqtt_id])
-        self.up_topic = '/'.join(['j', 'up', mqtt_id])
-        self.dn_topic = '/'.join(['j', 'dn', mqtt_id])
+.. class:: ZDMClient(device_id, jobs=None)
+
+    Creates a ZDM client instance with device id :samp:`device_id`. All other parameters are optional and have default values.
+
+    * :samp:`jobs` is the dictionary that defines the device's available jobs.
+    * :samp:`endpoint` endpoint of the ZDM broker.
+
+    """
+
+    def __init__(self, device_id, jobs=None, endpoint=ENDPOINT):
+        self.mqtt_id = device_id
+        self.jobs = jobs
+        self.zdm_endpoint = endpoint
+        self.mqttClient = MQTTClient(mqtt_id=device_id)
+
+        self.data_topic = '/'.join(['j', 'data', device_id])
+        self.up_topic = '/'.join(['j', 'up', device_id])
+        self.dn_topic = '/'.join(['j', 'dn', device_id])
+
+    def id(self):
+        """
+.. method:: id(pw)
+
+        Return the device id.
+        """
+        return self.mqtt_id
 
     def connect(self):
         """
-        .. method:: connect()
+.. method:: connect()
+
         Connect your device to the ZDM. You must set device's password first. It also enable your device to receive incoming messages.
         """
         for _ in range(5):
             try:
                 print("ZDMCient.connect attempt")
-                self.mqttClient.connect(host='rmq.zdm.stage.zerynth.com')
+                self.mqttClient.connect(host=self.zdm_endpoint, port=PORT)
                 break
             except Exception as e:
                 print("ZDMClient.connect", e)
@@ -47,58 +75,57 @@ class ZDMClient:
         if not self.mqttClient.connected:
             raise Exception("Failed to connect")
 
-        self.subscribe_down()
-        self.request_status()
-
-    def subscribe_down(self):
-        self.mqttClient.subscribe(self.dn_topic, callback=self.handle_dn_msg)
-
-    def request_status(self):
-        msg = {
-            'key': '#status',
-            'value': {}
-        }
-        self.publish_up(msg)
-        logger.info("Status requested")
-
-    def id(self):
-        return self.mqtt_id
-
-    def send_manifest(self):
-        payload = {
-            'key': '__manifest',
-            'value': [k for k in self.jobs]
-        }
-        self.mqttClient.publish(self.up_topic, json.dumps(payload))
+        self._subscribe_down()
+        self._request_status()
 
     def set_password(self, pw):
         """
-        .. method:: set_password(pw)
+    .. method:: set_password(pw)
+
         Set the device password to :samp:'pw'. You can generate a password using the ZDM, creating a key for your device
         """
         self.mqttClient.set_username_pw(self.mqtt_id, pw)
 
     def publish_data(self, tag, payload):
         """
-        .. method:: publish_data(tag, payload)
+    .. method:: publish_data(tag, payload)
+
         Publish a message to the ZDM.
+
         * :samp:`tag`, is a label for the device's data into your workspace. More than one device can publish message to the same tag
         * :samp:`payload` is the message payload, represented by a dictionary
         """
-        topic = self.build_ingestion_topic(tag)
+        topic = self._build_ingestion_topic(tag)
         self.mqttClient.publish(topic, payload)
 
-    def publish_up(self, payload):
+    def _subscribe_down(self):
+        self.mqttClient.subscribe(self.dn_topic, callback=self._handle_dn_msg)
+
+    def _request_status(self):
+        msg = {
+            'key': '#status',
+            'value': {}
+        }
+        self._publish_up(msg)
+        logger.debug("Status requested")
+
+    def _send_manifest(self):
+        payload = {
+            'key': '__manifest',
+            'value': [k for k in self.jobs]
+        }
+        self.mqttClient.publish(self.up_topic, json.dumps(payload))
+
+    def _publish_up(self, payload):
         topic = self.up_topic
         self.mqttClient.publish(topic, payload)
 
-    def handle_delta_status(self, arg):
-        print("zlib_zdm.Device.handle_delta_status received status delta")
+    def _handle_delta_status(self, arg):
+        logger.info("ZdmClient.handle_delta_status received status delta")
 
         if ('expected' in arg) and (arg['expected'] is not None):
             if '@fota' in arg['expected']:
-               print("fota not supported")
-
+                logger.warning("fota not supported")
             else:
                 # handle other keys
                 for expected_key in arg['expected']:
@@ -113,14 +140,14 @@ class ZDMClient:
                                     "key": expected_key,
                                     "value": {"status": "done", "result": res}
                                 }
-                                self.publish_up(json.dumps(job_response))
+                                self._publish_up(json.dumps(job_response))
                             except Exception as e:
-                                print("zlib_zdm.Device.handle_job_request", e)
+                                logger.error("ZdmClient.handle_job_request", e)
                                 res = 'exception'
 
-            self.send_manifest()
+            self._send_manifest()
 
-    def handle_dn_msg(self, client, data, msg):
+    def _handle_dn_msg(self, client, data, msg):
         payload = json.loads(msg.payload)
         try:
             if "key" not in payload:
@@ -149,10 +176,10 @@ class ZDMClient:
                         "value": {"status": "done", "result": result}
                     }
 
-                    self.publish_up(json.dumps(job_response))
+                    self._publish_up(json.dumps(job_response))
 
             elif method.startswith('#'):
-                self.handle_delta_status(payload['value'])
+                self._handle_delta_status(payload['value'])
 
             else:
                 logger.info("[{}] job {} not supported ".format(
@@ -163,17 +190,12 @@ class ZDMClient:
                     "value": {"status": "failed", "message": "method not supported"}
                 }
 
-                self.publish_up(json.dumps(job_response))
+                self._publish_up(json.dumps(job_response))
 
         except Exception as e:
             logger.error("Error", e)
 
-    def build_ingestion_topic(self, tag):
-        """ build the topic for the ingestion
-        ex.  data/<deviceid>/<TAG>/
-
-        """
+    def _build_ingestion_topic(self, tag):
+        # build the topic for the ingestion
+        # ex.  data/<deviceid>/<TAG>/
         return '/'.join([self.data_topic, tag])
-
-    def start_loop(self):
-        self.mqttClient.loop()

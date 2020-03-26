@@ -1,4 +1,5 @@
 astroid==2.3.3
+zdm-client-py
 certifi==2019.11.28
 chardet==3.0.4
 idna==2.8

@@ -28,15 +28,14 @@ class MQTTClient:
         logger.info("Connecting to: {}:{}".format(host, port))
 
     def on_connect(self, client, userdata, flags, rc):
-        print("on_connect")
         self.connected = True
         if rc == 0:
-            print("connected OK Returned code=", rc)
+            logger.info("Successfully connected. Returned code={}".format(rc))
         else:
-            print("Bad connection Returned code=", rc)
+            logger.error("Error in connection. Returned code={}".format(rc))
 
     def on_disconnect(self, client, userdata, rc):
-        print("Unexpected disconnection.")
+        logger.error("Unexpected disconnection. Return code={}".format(rc))
         self.client.loop_stop()
 
     def publish(self, topic, payload=None, qos=1):
@@ -46,7 +45,7 @@ class MQTTClient:
             self.client.publish(topic, payload, qos=qos)
             logger.info("Msg published to topic: {}".format(topic))
         except Exception as e:
-            print("Error" + e)
+            logger.error("Error" + e)
 
     def on_publish(self, client, userdata, mid):
         logger.info("Msg published from {} succesfully. {}. mid {}".format(client, userdata, mid))
