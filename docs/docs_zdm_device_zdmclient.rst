@@ -19,6 +19,7 @@ The ZDMClient class
     Creates a ZDM client instance with device id :samp:`device_id`. All other parameters are optional and have default values.
 
     * :samp:`jobs` is the dictionary that defines the device's available jobs.
+    * :samp:`endpoint` endpoint of the ZDM broker.
 
     
 .. method:: id(pw)
@@ -31,7 +32,7 @@ The ZDMClient class
         
 .. method:: set_password(pw)
 
-    Set the device password to :samp:'pw'. You can generate a password using the ZDM, creating a key for your device
+    Set the device password to :samp:`pw`. You can generate a password using the ZDM, creating a key for your device
     
 .. method:: publish_data(tag, payload)
 
