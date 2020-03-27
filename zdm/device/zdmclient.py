@@ -77,6 +77,7 @@ The ZDMClient class
 
         self._subscribe_down()
         self._request_status()
+        self._send_manifest()
 
     def set_password(self, pw):
         """
@@ -145,7 +146,6 @@ The ZDMClient class
                                 logger.error("ZdmClient.handle_job_request", e)
                                 res = 'exception'
 
-            self._send_manifest()
 
     def _handle_dn_msg(self, client, data, msg):
         payload = json.loads(msg.payload)
