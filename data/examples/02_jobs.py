@@ -10,10 +10,7 @@ import time
 from zdm import ZDMClient
 
 device_id = '!!! PUT YOU DEVICE_ID HERE !!!'
-password = '!!! PUT YOU PASSWORD HER !!!'
-
-device_id = "dev-4s9e0m0c4oar"
-password = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJrZXkiOjEsImV4cCI6MTU4Nzg1NTE0MywidXNlciI6ImRldi00czllMG0wYzRvYXIiLCJzdWIiOiJkZXYtNHM5ZTBtMGM0b2FyIn0.eyBji5UbDCfmRa3xdFlzA3TZ9lJlGJMKBorYnZeAUHo"
+password = '!!! PUT YOU PASSWORD HERE !!!'
 
 
 def set_temp(client, args):

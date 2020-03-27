@@ -11,7 +11,7 @@ import zdm
 
 
 device_id = '!!! PUT YOU DEVICE_ID HERE !!!'
-password = '!!! PUT YOU PASSWORD HER !!!'
+password = '!!! PUT YOU PASSWORD HERE !!!'
 
 
 device = zdm.ZDMClient(device_id=device_id)
