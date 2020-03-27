@@ -10,11 +10,11 @@ import time
 import zdm
 
 
-device_id = '!!! PUT YOU DEVICE_ID HERE !!!'
-password = '!!! PUT YOU PASSWORD HERE !!!'
+device_id = 'Here your device Id'
+password = 'Here your device password'
 
 
-device = zdm.ZDMClient(device_id=device_id)
+device = zdm.ZDMClient(device_id=device_id, endpoint="rmq.zdm.zerynth.com")
 device.set_password(password)
 device.connect()
 

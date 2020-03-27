@@ -20,7 +20,7 @@ from ..logging import MyLogger
 
 logger = MyLogger().get_logger()
 
-ENDPOINT = "rmq.zdm.zerynth.com"
+ENDPOINT = "rmq.zdm.test.zerynth.com"
 PORT = 1883
 
 

@@ -9,9 +9,8 @@ import time
 
 from zdm import ZDMClient
 
-device_id = '!!! PUT YOU DEVICE_ID HERE !!!'
-password = '!!! PUT YOU PASSWORD HERE !!!'
-
+device_id = 'Here your device Id'
+password = 'Here your device password'
 
 def set_temp(client, args):
     print("Setting temperature. Received args: {}".format(args))
@@ -26,7 +25,7 @@ my_jobs = {
     "set_temp": set_temp,
 }
 
-device = ZDMClient(device_id=device_id, jobs=my_jobs)
+device = ZDMClient(device_id=device_id, jobs=my_jobs, endpoint="rmq.zdm.zerynth.com")
 device.set_password(password)
 device.connect()
 
