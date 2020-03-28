@@ -65,18 +65,18 @@ The ZDMClient class
         """
         for _ in range(5):
             try:
-                print("ZDMCient.connect attempt")
+                logger.info("ZDMCient.connect attempt")
                 self.mqttClient.connect(host=self.zdm_endpoint, port=PORT)
                 break
             except Exception as e:
-                print("ZDMClient.connect", e)
+                logger.error("ZDMClient.connect", e)
                 pass
         time.sleep(2)
         if not self.mqttClient.connected:
             raise Exception("Failed to connect")
 
         self._subscribe_down()
-        self._request_status()
+        #self._request_status()
 
     def set_password(self, pw):
         """
@@ -99,6 +99,7 @@ The ZDMClient class
         self.mqttClient.publish(topic, payload)
 
     def _subscribe_down(self):
+        logger.debug("ZdmClient._subscribe_down subscribed to topic: {}".format(self.dn_topic))
         self.mqttClient.subscribe(self.dn_topic, callback=self._handle_dn_msg)
 
     def _request_status(self):
@@ -121,11 +122,11 @@ The ZDMClient class
         self.mqttClient.publish(topic, payload)
 
     def _handle_delta_status(self, arg):
-        logger.info("ZdmClient.handle_delta_status received status delta")
+        logger.debug("ZdmClient._handle_delta_status received status delta")
 
         if ('expected' in arg) and (arg['expected'] is not None):
             if '@fota' in arg['expected']:
-                logger.warning("fota not supported")
+                logger.warning("FOTA is not supported on ZdmClient")
             else:
                 # handle other keys
                 for expected_key in arg['expected']:
@@ -148,7 +149,9 @@ The ZDMClient class
             self._send_manifest()
 
     def _handle_dn_msg(self, client, data, msg):
+        logger.debug("AdmClient._handle_dn_msg receive message: {}".format(payload))
         payload = json.loads(msg.payload)
+        logger.debug("AdmClient._handle_dn_msg receive message: {}".format(payload))
         try:
             if "key" not in payload:
                 raise Exception(

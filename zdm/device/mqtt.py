@@ -28,14 +28,27 @@ class MQTTClient:
         logger.info("Connecting to: {}:{}".format(host, port))
 
     def on_connect(self, client, userdata, flags, rc):
-        self.connected = True
+        # self.connected = True
+        # 0: Connection successful
+        # 1: Connection refused - incorrect protocol version
+        # 2: Connection refused - invalid client identifier
+        # 3: Connection refused - server unavailable
+        # 4: Connection refused - bad username or password
+        # 5: Connection refused - not authorised 6-255: Currently unused.
+        logger.debug("On connect flags:{}, rc:{}".format(flags, rc))
         if rc == 0:
+            self.connected = True
             logger.info("Successfully connected. Returned code={}".format(rc))
         else:
+            self.connected = False
             logger.error("Error in connection. Returned code={}".format(rc))
 
     def on_disconnect(self, client, userdata, rc):
-        logger.error("Unexpected disconnection. Return code={}".format(rc))
+        if rc != 0:
+            logger.error("Unexpected disconnection. Return code={}".format(rc))
+        else:
+            logger.warning("Client disconnected after disconnect() is called. Return code={}".format(rc))
+
         self.client.loop_stop()
 
     def publish(self, topic, payload=None, qos=1):
