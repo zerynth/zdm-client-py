@@ -1,7 +1,7 @@
 # Zerynth ZDM Client Python Library
 
-A python library that emulates a device for the  ZDM.
-It permits connect to the ZDM, send data and receives jobs.
+A python library that emulates a device for the  ZDM (Zerynth Device Maanager).
+The library permits: to connect to the ZDM, to send data and to receive jobs.
 
 ## Installation
 
@@ -16,8 +16,8 @@ Add a new device and generate a new password for the device.
 
 Copy the obtained **Device Id** and **Password** in the example below.
 
-In the example, the Client connects to the ZDm with the username e password.
-Then it sends an infinite stream of messages onto three different tag ("bathroom", "bedroom", "living room") with a random temperature.
+In the example, the Client connects to the ZDM with the username e password.
+Then it sends an infinite stream of messages onto three different tags ("bathroom", "bedroom", "living room") with a random temperature.
 
 ```python
 import random
