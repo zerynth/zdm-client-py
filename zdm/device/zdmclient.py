@@ -117,13 +117,17 @@ The ZDMClient class
         logger.debug("Status requested")
 
     def _send_manifest(self):
-        payload = {
-            'key': '__manifest',
-            'value': [k for k in self.jobs]
-        }
+        if self.jobs:
+            payload = {
+                'key': '__manifest',
+                'value': [k for k in self.jobs]
+            }
 
-        self.mqttClient.publish(self.up_topic, json.dumps(payload))
-        logger.debug("Sent manifest correctly. Payload: {}".format(payload))
+            self.mqttClient.publish(self.up_topic, json.dumps(payload))
+            logger.debug("Sent manifest correctly. Payload: {}".format(payload))
+        else:
+            logger.debug("No custom Jobs.")
+
 
     def _publish_up(self, payload):
         topic = self.up_topic
