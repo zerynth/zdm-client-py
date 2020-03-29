@@ -56,19 +56,19 @@ class MQTTClient:
             payload = json.dumps(payload)
         try:
             self.client.publish(topic, payload, qos=qos)
-            logger.info("Msg published to topic: {}".format(topic))
+            logger.debug("Msg published correctly. Msg: {}, topic:{}".format(payload, topic))
         except Exception as e:
             logger.error("Error" + e)
 
     def on_publish(self, client, userdata, mid):
-        logger.info("Msg published from {} succesfully. {}. mid {}".format(client, userdata, mid))
+        logger.debug("Msg published from {} succesfully. {}. mid {}".format(client, userdata, mid))
 
     def on_message(client, userdata, msg):
-        logger.info("Message received: {}".format(msg))
+        logger.debug("Message received: {}".format(msg))
 
     def subscribe(self, topic, callback=None, qos=1):
         self.client.subscribe(topic=topic, qos=qos)
-        logger.info("Subscribed to topic: {}".format(topic))
+        logger.debug("Subscribed to topic: {}".format(topic))
 
         if callback:
             self.client.message_callback_add(topic, callback)

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import logging
-import os
 import datetime
-import time
+import logging
+
 
 # Metaclass that define the Singleton class
 class SingletonType(type):
@@ -14,6 +13,7 @@ class SingletonType(type):
             cls._instances[cls] = super(SingletonType, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+
 # python 3 style
 class MyLogger(object, metaclass=SingletonType):
     """ A singleton containing the logging settings """
@@ -21,19 +21,10 @@ class MyLogger(object, metaclass=SingletonType):
     _logger = None
 
     def __init__(self):
-        self._logger = logging.getLogger("microtosca")
-        self._logger.setLevel(logging.DEBUG)
-        #self._logger.setLevel(logging.INFO)
+        self._logger = logging.getLogger(__name__)
+        self._logger.setLevel(logging.INFO)
 
-        formatter = logging.Formatter('%(asctime)s \t [%(levelname)s | %(filename)s:%(lineno)s] > %(message)s')
-
-        now = datetime.datetime.now()
-        # dirname = "./log"
-
-        # if not os.path.isdir(dirname):
-        #     os.mkdir(dirname)
-        #     os.chmod(dirname, "0777")
-        # fileHandler = logging.FileHandler(dirname + "/log_" + now.strftime("%Y-%m-%d")+".log")
+        formatter = logging.Formatter('%(asctime)s [%(levelname)s | %(filename)s:%(lineno)s] > %(message)s')
 
         streamHandler = logging.StreamHandler()
 
@@ -45,3 +36,5 @@ class MyLogger(object, metaclass=SingletonType):
 
     def get_logger(self):
         return self._logger
+
+

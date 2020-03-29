@@ -13,6 +13,7 @@ It can be used to emulate a Zerynth device and connect it to the ZDM.
     """
 
 import json
+import logging
 import time
 
 from .mqtt import MQTTClient
@@ -36,10 +37,11 @@ The ZDMClient class
 
     * :samp:`jobs` is the dictionary that defines the device's available jobs.
     * :samp:`endpoint` endpoint of the ZDM broker.
+    * :samp:`verbose` boolean flag for verbose output. Default False.
 
     """
 
-    def __init__(self, device_id, jobs=None, endpoint=ENDPOINT):
+    def __init__(self, device_id, jobs=None, endpoint=ENDPOINT, verbose=False):
         self.mqtt_id = device_id
         self.jobs = jobs
         self.zdm_endpoint = endpoint
@@ -48,6 +50,8 @@ The ZDMClient class
         self.data_topic = '/'.join(['j', 'data', device_id])
         self.up_topic = '/'.join(['j', 'up', device_id])
         self.dn_topic = '/'.join(['j', 'dn', device_id])
+        if verbose:
+            logger.setLevel(logging.DEBUG)
 
     def id(self):
         """
@@ -76,7 +80,8 @@ The ZDMClient class
             raise Exception("Failed to connect")
 
         self._subscribe_down()
-        #self._request_status()
+        self._request_status()
+        self._send_manifest()
 
     def set_password(self, pw):
         """
@@ -97,6 +102,7 @@ The ZDMClient class
         """
         topic = self._build_ingestion_topic(tag)
         self.mqttClient.publish(topic, payload)
+        logger.info("Message published correctly. Msg: {}, topic:{}".format(payload, topic))
 
     def _subscribe_down(self):
         logger.debug("ZdmClient._subscribe_down subscribed to topic: {}".format(self.dn_topic))
@@ -115,14 +121,17 @@ The ZDMClient class
             'key': '__manifest',
             'value': [k for k in self.jobs]
         }
+
         self.mqttClient.publish(self.up_topic, json.dumps(payload))
+        logger.debug("Sent manifest correctly. Payload: {}".format(payload))
 
     def _publish_up(self, payload):
         topic = self.up_topic
         self.mqttClient.publish(topic, payload)
+        logger.debug("Msg published on UP topic correctly. Msg: {}, topic:{}".format(payload, topic))
 
     def _handle_delta_status(self, arg):
-        logger.debug("ZdmClient._handle_delta_status received status delta")
+        logger.debug("Received a delta status. Msg:{}".format(arg))
 
         if ('expected' in arg) and (arg['expected'] is not None):
             if '@fota' in arg['expected']:
@@ -136,20 +145,17 @@ The ZDMClient class
                         if expected_key[1:] in self.jobs:
                             try:
                                 res = self.jobs[expected_key[1:]](self, arg)
-                                logger.info("job {} executed. Result: {}".format(expected_key[1:], res))
                                 job_response = {
                                     "key": expected_key,
                                     "value": {"status": "done", "result": res}
                                 }
                                 self._publish_up(json.dumps(job_response))
+                                logger.info("Job {} executed succesfully. Result: {}".format(expected_key[1:], res))
                             except Exception as e:
                                 logger.error("ZdmClient.handle_job_request", e)
                                 res = 'exception'
 
-            self._send_manifest()
-
     def _handle_dn_msg(self, client, data, msg):
-        logger.debug("AdmClient._handle_dn_msg receive message: {}".format(payload))
         payload = json.loads(msg.payload)
         logger.debug("AdmClient._handle_dn_msg receive message: {}".format(payload))
         try:
@@ -172,7 +178,7 @@ The ZDMClient class
                 if method in self.jobs:
                     result = self.jobs[method](self, args)
                     logger.info("[{}] job {} executed with result res:{} ".format(
-                        self.id, method, result))
+                        self.mqtt_id, method, result))
 
                     job_response = {
                         "key": "@" + method,
