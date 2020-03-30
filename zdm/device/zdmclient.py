@@ -160,7 +160,7 @@ The ZDMClient class
                                 res = 'exception'
 
     def _handle_dn_msg(self, client, data, msg):
-        payload = json.loads(msg.payload)
+        payload = json.loads(msg.payload.decode("utf-8"))
         logger.debug("AdmClient._handle_dn_msg receive message: {}".format(payload))
         try:
             if "key" not in payload:
