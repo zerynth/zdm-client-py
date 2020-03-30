@@ -14,13 +14,15 @@ password = '*** PUT YOUR PASSWORD HERE ***'
 
 
 def set_temp(zdmclient, args):
+    # zdmclient: is the object of the ZdmClient.
+    # args     : is a json with the arguments  of the function.
     print("Executing job set_temp. Received args: {}".format(args))
     # DO SOMETHING
-    # return the result of the job ad JSON
+    # return: a json with the result of the job.
     return json.dumps({"msg": "Temperature set correctly."})
 
 
-# A dictionary of jobs where the key is the name of the job and value if the function to execute.
+# A dictionary of jobs where the key is the name of the job and value if the callback to execute.
 my_jobs = {
     "set_temp": set_temp,
 }

@@ -7,7 +7,6 @@ Each message is published into a random tag with a random temperature value.
 """
 import random
 import time
-
 import zdm
 
 device_id = '*** PUT YOU DEVICE ID HERE ***'
