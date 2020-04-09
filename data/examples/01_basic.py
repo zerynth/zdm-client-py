@@ -16,7 +16,7 @@ device = zdm.ZDMClient(device_id=device_id)
 device.set_password(password)
 device.connect()
 
-tags = ["bathroom", "bedroom", "living room"]
+tags = ["tag1", "tag2", "tag3"]
 
 while True:
     time.sleep(2)
