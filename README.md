@@ -7,7 +7,7 @@ The library permits: to connect to the ZDM, to send data and to receive jobs.
 
 The latest stable version [is available on PyPI](https://pypi.org/project/zdm-client-py/). Either add `zdm-client-py` to your `requirements.txt` file or install with pip:
 ```
-pip install zdm-client-py 
+pip install zdm-client-py
 ```
     
 ## Usage
@@ -33,10 +33,9 @@ device.connect()
 
 time.sleep(5)
 
-tags = ["bathroom", "bedroom", "living room"]
+tags = ["tag1", "tag2", "tag3"]
 
 while True:
-   
     temp = random.randint(10, 30)  # random temperature
     tag = random.choice(tags)      # random choice of the tag
     payload = {"temp": temp}
