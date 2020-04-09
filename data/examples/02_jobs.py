@@ -12,7 +12,6 @@ from zdm import ZDMClient
 device_id = '*** PUT YOU DEVICE ID HERE ***'
 password = '*** PUT YOUR PASSWORD HERE ***'
 
-
 def set_temp(zdmclient, args):
     # zdmclient: is the object of the ZdmClient.
     # args     : is a json with the arguments  of the function.

@@ -20,6 +20,7 @@ The ZDMClient class
 
     * :samp:`jobs` is the dictionary that defines the device's available jobs.
     * :samp:`endpoint` endpoint of the ZDM broker.
+    * :samp:`verbose` boolean flag for verbose output. Default False.
 
     
 .. method:: id(pw)

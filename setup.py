@@ -13,7 +13,7 @@ requirements = [
 
 setuptools.setup(
     name="zdm-client-py",
-    version="0.0.5",
+    version="0.0.6",
     author="Zerynth Team",
     author_email="d.neri@zerynth.com",
     description="ZDM Client Python Library",
@@ -22,6 +22,11 @@ setuptools.setup(
     url="https://github.com/zerynth/zdm-client-py.git",
     packages=setuptools.find_packages(exclude=['tests']),
     install_requires=requirements,
+    data_files=[
+        ('/usr/share/zdm/examples',
+         ['data/examples/01_basic.py',
+          'data/examples/01_jobs.py'])
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
