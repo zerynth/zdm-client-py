@@ -3,6 +3,11 @@ History
 =======
 
 
+0.0.7 (2020-04-09)
+----------------------------
+* modified examples
+* copy examples in /usr/share/zdm/examples folder
+
 0.0.6 (2020-03-30)
 ----------------------------
 
