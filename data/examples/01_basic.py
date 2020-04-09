@@ -9,18 +9,43 @@ import random
 import time
 import zdm
 
-device_id = '*** PUT YOU DEVICE ID HERE ***'
-password = '*** PUT YOUR PASSWORD HERE ***'
+device_id = 'device_id'
+password = 'password'
+
+
+def pub_random():
+    # this function is called periodically to publish to ZDM random int value labeled with tags values
+    print('------ publish random ------')
+    tags = ['tag1', 'tag2', 'tag3']
+
+    for t in tags:
+        value = random.randint(0, 20)
+        payload = {
+            'value': value
+        }
+        # publish payload to ZDM
+        device.publish_data(t, payload)
+        print('published on tag:', t, ':', payload)
+
+    print('pub_random done')
+
+
+def pub_temp_pressure():
+    # this function publish another payload with two random int values
+    print('---- publish temp_pressure ----')
+    tag = 'tag4'
+    temp = random.randint(19, 23)
+    pressure = random.randint(50, 60)
+    payload = {'temp': temp, 'pressure': pressure}
+    device.publish_data(tag, payload)
+    print('published on tag: ', tag, ':', payload)
+
 
 device = zdm.ZDMClient(device_id=device_id)
 device.set_password(password)
 device.connect()
 
-tags = ["tag1", "tag2", "tag3"]
-
 while True:
     time.sleep(2)
-    temp = random.randint(10, 30)  # random temperature
-    tag = random.choice(tags)  # random choice of the tag
-    payload = {"temp": temp}
-    device.publish_data(tag, payload)
+    pub_random()
+    pub_temp_pressure()
