@@ -13,7 +13,7 @@ requirements = [
 
 setuptools.setup(
     name="zdm-client-py",
-    version="0.0.8",
+    version="0.0.9",
     author="Zerynth Team",
     author_email="d.neri@zerynth.com",
     description="ZDM Client Python Library",
