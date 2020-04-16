@@ -33,7 +33,7 @@ device.connect()
 
 time.sleep(5)
 
-tags = ["bathroom", "bedroom", "living room"]
+tags = ["tag1", "tag2", "tag3"]
 
 while True:
    
