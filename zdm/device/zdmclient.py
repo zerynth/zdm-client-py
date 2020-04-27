@@ -174,7 +174,7 @@ The ZDMClient class
             method = payload["key"]
             value = payload["value"]
             if "args" in value:
-                args = value["args"]
+                args = json.loads(value["args"])
             else:
                 args = ""
 
