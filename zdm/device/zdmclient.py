@@ -21,7 +21,7 @@ from ..logging import MyLogger
 
 logger = MyLogger().get_logger()
 
-ENDPOINT = "rmq.zdm.zerynth.com"
+ENDPOINT = "mqtt.zdm.zerynth.com"
 PORT = 1883
 
 
