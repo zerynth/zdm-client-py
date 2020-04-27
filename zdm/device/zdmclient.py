@@ -70,7 +70,7 @@ The ZDMClient class
         """
         for _ in range(5):
             try:
-                logger.info("ZDMCient.connect attempt")
+                logger.info("ZDMClient.connect attempt")
                 self.mqttClient.connect(host=self.zdm_endpoint, port=PORT)
                 break
             except Exception as e:
