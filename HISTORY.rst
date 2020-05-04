@@ -2,6 +2,15 @@
 History
 =======
 
+0.0.11 (2020-05-04)
+----------------------------
+* fix json load arguments of job
+
+0.0.10 (2020-04-27)
+----------------------------
+* Changed default endpoint to "mqtt.zdm.zerynth.com"
+* Fix args of Jobs as ./json
+
 
 0.0.7 (2020-04-09)
 ----------------------------

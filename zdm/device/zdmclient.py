@@ -174,9 +174,9 @@ The ZDMClient class
             method = payload["key"]
             value = payload["value"]
             if "args" in value:
-                args = json.loads(value["args"])
+                args = value["args"]
             else:
-                args = ""
+                args = {}
 
             if method.startswith('@'):
                 method = method[1:]
