@@ -11,7 +11,7 @@ pip install zdm-client-py
 ```
     
 ## Usage
-Login to the ZDM platform (by using the [ZDM Cloud](https://zdm.zerynth.com) or the [ZDM Cli](https://docs.zerynth.com/latest/)).
+Login to the ZDM platform (by using the [ZDM Web](https://zdm.zerynth.com) or the [ZDM CLI](https://www.zerynth.com/blog/docs/zdm/getting-started/the-zdm-command-line-interface/)).
 Add a new device and generate a new password for the device.
 
 Copy the obtained **Device Id** and **Password** in the example below.
