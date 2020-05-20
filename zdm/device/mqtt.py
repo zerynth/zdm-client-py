@@ -1,5 +1,6 @@
-import paho.mqtt.client as mqtt
 import json
+
+import paho.mqtt.client as mqtt
 
 from ..logging import MyLogger
 
@@ -9,7 +10,8 @@ logger = MyLogger().get_logger()
 class MQTTClient:
 
     def __init__(self, mqtt_id, ssl_ctx=None):
-        self.client = mqtt.Client(mqtt_id)
+        # TODO: pass clean session as parameter
+        self.client = mqtt.Client(mqtt_id, clean_session=False)
         self.ssl_ctx = ssl_ctx
 
         self.client.on_connect = self.on_connect
@@ -23,7 +25,7 @@ class MQTTClient:
         self.client.username_pw_set(username=username, password=password)
 
     def connect(self, host, port=1883):
-        self.client.connect(host, port=port)
+        self.client.connect(host, port=port, )
         self.client.loop_start()
         logger.info("Connecting to: {}:{}".format(host, port))
 
@@ -49,19 +51,17 @@ class MQTTClient:
         else:
             logger.warning("Client disconnected after disconnect() is called. Return code={}".format(rc))
 
-        self.client.loop_stop()
-
     def publish(self, topic, payload=None, qos=1):
         if type(payload) is dict:
             payload = json.dumps(payload)
         try:
-            self.client.publish(topic, payload, qos=qos)
-            logger.debug("Msg published correctly. Msg: {}, topic:{}".format(payload, topic))
+            ret = self.client.publish(topic, payload, qos=qos)
+            ret.wait_for_publish()
         except Exception as e:
             logger.error("Error" + e)
 
     def on_publish(self, client, userdata, mid):
-        logger.debug("Msg published from {} succesfully. {}. mid {}".format(client, userdata, mid))
+        logger.debug("#{} msg published succesfully. ".format(mid))
 
     def on_message(client, userdata, msg):
         logger.debug("Message received: {}".format(msg))
@@ -73,5 +73,5 @@ class MQTTClient:
         if callback:
             self.client.message_callback_add(topic, callback)
 
-    def loop(self):
-        self.client.loop_forever()
+    # def loop(self):
+    #     self.client.loop_forever()

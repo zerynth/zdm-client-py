@@ -2,6 +2,11 @@
 History
 =======
 
+0.1.0 (2020-05-14)
+----------------------------
+* added wait_for_publish() to the published msg in order to guarantee that the message is sent to the ZDM
+* added the send_event() method for sending events to the ZDM.
+
 0.0.11 (2020-05-04)
 ----------------------------
 * fix json load arguments of job

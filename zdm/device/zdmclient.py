@@ -213,3 +213,22 @@ The ZDMClient class
         # build the topic for the ingestion
         # ex.  data/<deviceid>/<TAG>/
         return '/'.join([self.data_topic, tag])
+
+    def send_event(self, value):
+        """
+   .. method:: send_event(tag, value)
+
+       Publish an event to the ZDM.
+
+       * :samp:`value`, the value of the event as dictionary.
+       """
+        self._send_up_msg('', 'event', value)
+
+    # TODO use this  _send_up_msg in all the code instead of publish_up
+    def _send_up_msg(self, prefix, key, value):
+        msg = {
+            'key': prefix + key,
+            'value': value
+        }
+        self.mqttClient.publish(self.up_topic, msg)
+        logger.info("Sent message with key: {}, payload:{}".format(key, value))
