@@ -29,11 +29,11 @@ while True:
     }
 
     # opening the condition
-    device.send_condition(uuid, tag, start, None, payload)
+    device.open_condition(uuid, tag, start, payload)
     time.sleep(5)
 
     # closing the condition
     d = datetime.datetime.utcnow()# <-- get time in UTC
     finish = d.isoformat("T") + "Z"
-    device.send_condition(uuid, tag, start, finish, payload)
+    device.close_condition(uuid, tag, finish)
     time.sleep(5)
