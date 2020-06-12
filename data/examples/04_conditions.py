@@ -11,7 +11,7 @@ import datetime
 
 from zdm import ZDMClient
 
-device_id = 'device-id'
+device_id = 'device id'
 password = 'device jwt'
 
 device = ZDMClient(device_id=device_id, endpoint="mqtt.zdm.stage.zerynth.com")
@@ -21,7 +21,7 @@ device.connect()
 while True:
     uuid = ''.join(random.choices(string.ascii_uppercase +
                                         string.digits, k=5))
-    tag = 'test-condition_'+uuid
+    tag = 'test-condition'
     d = datetime.datetime.utcnow()
     start = d.isoformat("T") + "Z"
     payload = {
