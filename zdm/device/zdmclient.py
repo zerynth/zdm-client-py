@@ -294,3 +294,6 @@ class Condition:
             self.finish = finish
 
         self.client._close_condition(self.uuid, self.finish)
+
+    def reset(self):
+        self.uuid = str(time.time() * 1000.0)
