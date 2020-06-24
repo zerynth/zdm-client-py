@@ -41,12 +41,12 @@ The ZDMClient class
     * :samp:`jobs` is the dictionary that defines the device's available jobs (default None).
     * :samp:`endpoint` is the url of the ZDM broker (default rmq.zdm.zerynth.com).
     * :samp:`verbose` boolean flag for verbose output (default False).
-    * :samp:`time_callback`, is a function accepting that will be called when timestamps are received after time_request
-
+    * :samp:`time_callback` is a function that is called when timestamps are received after the timestamp is requested.
+             func time_callback(zdmclient, arg): print(arg)
 
     """
 
-    def __init__(self, device_id, jobs={}, conditions=[], endpoint=ENDPOINT, verbose=False, time_callback=None):
+    def __init__(self, device_id, jobs={}, conditions=[], endpoint=ENDPOINT, verbose=False, time_callback=lambda c, arg:print(arg)):
         self.mqtt_id = device_id
         self.jobs = jobs
         self.conditions = conditions
@@ -139,7 +139,7 @@ The ZDMClient class
         self.mqttClient.publish(self.up_topic, msg)
 
 
-    #@deprecated method. Use the _send_up_msg
+    #@deprecated method. Use the send_up_msg
     def _publish_up(self, payload):
         topic = self.up_topic
         self.mqttClient.publish(topic, payload)
@@ -238,8 +238,6 @@ The ZDMClient class
        """
         self._send_up_msg('', 'event', value)
 
-    # def create_condition(self, tag):
-    #     return Condition(self, tag)
 
     def get_condition(self, condition_tag):
         if condition_tag in self.conditions:
