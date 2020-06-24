@@ -12,13 +12,14 @@ It can be used to emulate a Zerynth device and connect it to the ZDM.
 
     """
 
+import datetime
 import json
 import logging
 import time
-import datetime
 
 from .mqtt import MQTTClient
 from ..logging import MyLogger
+from .constants import MQTT_DEVICE_REQ_PREFIX, MQTT_JOB_PREFIX, MQTT_PRIVATE_PREFIX, MQTT_STRONG_PRIVATE_PREFIX
 
 logger = MyLogger().get_logger()
 
@@ -45,9 +46,10 @@ The ZDMClient class
 
     """
 
-    def __init__(self, device_id, jobs=None, endpoint=ENDPOINT, verbose=False, time_callback=None):
+    def __init__(self, device_id, jobs={}, conditions=[], endpoint=ENDPOINT, verbose=False, time_callback=None):
         self.mqtt_id = device_id
         self.jobs = jobs
+        self.conditions = conditions
         self.zdm_endpoint = endpoint
         self.mqttClient = MQTTClient(mqtt_id=device_id)
 
@@ -115,33 +117,29 @@ The ZDMClient class
         self.mqttClient.subscribe(self.dn_topic, callback=self._handle_dn_msg)
 
     def _request_status(self):
-        msg = {
-            'key': '#status',
-            'value': {}
-        }
-        self._publish_up(msg)
+        self._send_up_msg(MQTT_DEVICE_REQ_PREFIX, "status")
         logger.debug("Status requested")
 
     def request_timestamp(self):
-        msg = {
-            'key': '#now',
-            'value': {}
-        }
-        self._publish_up(msg)
+        self._send_up_msg(MQTT_DEVICE_REQ_PREFIX, "now")
         logger.debug("Timestamps requested")
 
     def _send_manifest(self):
-        if self.jobs:
-            payload = {
-                'key': '__manifest',
-                'value': [k for k in self.jobs]
-            }
+        value = {
+            'jobs': [k for k in self.jobs],
+            'conditions': self.conditions
+        }
+        self._send_up_msg(MQTT_STRONG_PRIVATE_PREFIX, "manifest", value)
 
-            self.mqttClient.publish(self.up_topic, json.dumps(payload))
-            logger.debug("Sent manifest correctly. Payload: {}".format(payload))
-        else:
-            logger.debug("No custom Jobs.")
+    def _send_up_msg(self, prefix, key, value={}):
+        msg = {
+            'key': prefix + key,
+            'value': value
+        }
+        self.mqttClient.publish(self.up_topic, msg)
 
+
+    #@deprecated method. Use the _send_up_msg
     def _publish_up(self, payload):
         topic = self.up_topic
         self.mqttClient.publish(topic, payload)
@@ -229,6 +227,7 @@ The ZDMClient class
         # ex.  data/<deviceid>/<TAG>/
         return '/'.join([self.data_topic, tag])
 
+    # @Deprecated methods. Use the condition.
     def send_event(self, value):
         """
     .. method:: send_event(tag, value)
@@ -239,61 +238,61 @@ The ZDMClient class
        """
         self._send_up_msg('', 'event', value)
 
-    def create_condition(self, tag, payload=None):
-        condition = Condition(self, tag, payload)
-        return condition
+    # def create_condition(self, tag):
+    #     return Condition(self, tag)
 
-    def _open_condition(self, uuid, tag, start, payload=None):
+    def get_condition(self, condition_tag):
+        if condition_tag in self.conditions:
+            return Condition(self, condition_tag)
+        else:
+            raise Exception("Condition tag '{}' not found. Please pass the condition on the constructor.".format(condition_tag))
+
+    def _open_condition(self, uuid, tag, start, payload={}):
         value = {
             'uuid': uuid,
             'tag': tag,
-            'payload': payload,
+            'payload': {} if payload is None else payload,
             'start': start
         }
         self._send_up_msg('', 'condition', value)
 
-    def _close_condition(self, uuid, finish):
+    def _close_condition(self, uuid, finish, payload):
         value = {
             'uuid': uuid,
-            'finish': finish
+            'finish': finish,
+            'payload': payload
         }
         self._send_up_msg('', 'condition', value)
 
-    def _send_up_msg(self, prefix, key, value):
-        msg = {
-            'key': prefix + key,
-            'value': value
-        }
-        self.mqttClient.publish(self.up_topic, msg)
-
 
 class Condition:
-    def __init__(self, client, tag, payload=None):
-        self.uuid = str(time.time() * 1000.0)
+    def __init__(self, client, tag):
+        self.uuid = self._gen_uuid()
         self.tag = tag
-        self.payload = payload
         self.client = client
 
         self.start = None
         self.finish = None
 
-    def open(self, start=None):
+    def open(self, payload=None, start=None):
         if start is None:
             d = datetime.datetime.utcnow()
             self.start = d.isoformat("T") + "Z"
         else:
             self.start = start
+        self.client._open_condition(self.uuid, self.tag, self.start, payload)
 
-        self.client._open_condition(self.uuid, self.tag, self.start, self.payload)
-
-    def close(self, finish=None):
+    def close(self, payload=None, finish=None):
         if finish is None:
             d = datetime.datetime.utcnow()
             self.finish = d.isoformat("T") + "Z"
         else:
             self.finish = finish
 
-        self.client._close_condition(self.uuid, self.finish)
+        self.client._close_condition(self.uuid, self.finish, payload)
 
     def reset(self):
-        self.uuid = str(time.time() * 1000.0)
+        self.uuid = self._gen_uuid()
+
+    def _gen_uuid(self):
+        return str(time.time() * 1000.0)
