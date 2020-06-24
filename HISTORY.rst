@@ -2,6 +2,11 @@
 History
 =======
 
+0.2.0 (2020-06-16)
+----------------------------
+* Added Conditions and removed the events.
+* removed wait_for_publish()
+
 0.1.0 (2020-05-14)
 ----------------------------
 * added wait_for_publish() to the published msg in order to guarantee that the message is sent to the ZDM
