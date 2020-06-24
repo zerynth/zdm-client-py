@@ -18,7 +18,7 @@ def time_callback(zdmclient, arg):
     isTimeReceived = True
     print("Timestamp received: {}".format(arg))
 
-device = ZDMClient(device_id=device_id, time_callback=time_callback, endpoint="mqtt.zdm.test.zerynth.com")
+device = ZDMClient(device_id=device_id, time_callback=time_callback)
 
 device.set_password(password)
 device.connect()
