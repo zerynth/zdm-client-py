@@ -11,7 +11,8 @@ from zdevicemanager.base.base import cli
 # import your test modules
 # from .test_data import DeviceTest
 # from .test_jobs import JobsTest
-from .test_conditions import ConditionsTest
+# from .test_conditions import ConditionsTest
+from .test_timestamp import TimeTest
 
 # def suite():
 #     suite = unittest.TestSuite()
