@@ -1,10 +1,9 @@
 import logging
 import sys
-import unittest
 import time
-import random
-import zdm
+import unittest
 
+import zdm
 from zdevicemanager import ZdmClient as zdmapi
 from zdevicemanager.base.cfg import env
 
@@ -14,6 +13,7 @@ log = logging.getLogger("ZDM_cli_test")
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 received = False
+
 
 class JobsTest(unittest.TestCase):
 
@@ -36,12 +36,32 @@ class JobsTest(unittest.TestCase):
             print("Executing job set_temp. Received args: {}".format(args))
             return {"msg": "Temperature set correctly."}
 
+        job = "myJob"
         my_jobs = {
-            "myJob": test_job,
+            job: test_job,
         }
 
         self.device.jobs = my_jobs
 
-        self.zapi.jobs.schedule("myJob", {"value": 45}, [self.d.id], on_time="")
+        self.zapi.jobs.schedule(job, {"value": 45}, [self.d.id], on_time="")
         time.sleep(6)
         self.assertEqual(True, received)
+        status = self.zapi.jobs.status_current(job, self.d.id)
+        self.assertEqual("@" + job, status.key)
+        self.assertEqual({"msg": "Temperature set correctly."}, status.value)
+
+    def test_fota_not_supported(self):
+        job = "fota"
+        self.zapi.jobs.schedule(job, {}, [self.d.id], on_time="")
+        time.sleep(6)
+        status = self.zapi.jobs.status_current(job, self.d.id)
+        self.assertEqual("@" + job, status.key)
+        self.assertIn("error", status.value)
+
+    def test_job_not_supported(self):
+        job = "not-existing"
+        self.zapi.jobs.schedule(job, {}, [self.d.id], on_time="")
+        time.sleep(6)
+        status = self.zapi.jobs.status_current(job, self.d.id)
+        # self.assertEqual("@" + job, status.key)
+        self.assertIn("error", status.value.keys())

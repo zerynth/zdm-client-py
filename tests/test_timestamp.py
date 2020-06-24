@@ -32,7 +32,7 @@ class TimeTest(unittest.TestCase):
         self.device.set_password(jwt)
         self.device.connect()
 
-    def test_open_close_condition(self):
+    def test_timestamp(self):
 
         def time_callback(zdmclient, arg):
             global isTimeReceived
@@ -44,3 +44,7 @@ class TimeTest(unittest.TestCase):
         self.device.request_timestamp()
         time.sleep(5)
         self.assertTrue(isTimeReceived)
+
+    def test_no_timestamp_cb(self):
+        self.device.request_timestamp()
+        time.sleep(5)
