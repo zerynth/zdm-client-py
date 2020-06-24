@@ -160,7 +160,6 @@ The ZDMClient class
                 for expected_key in arg['expected']:
                     value = arg['expected'][expected_key]['v']
 
-                    # if expected_key[0] == '@':
                     if expected_key.startswith(MQTT_PREFIX_JOB):
                         delta_method = expected_key[1:]
                         self.handle_job_request(delta_method, value)
