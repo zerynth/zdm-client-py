@@ -14,7 +14,7 @@ log = logging.getLogger("ZDM_cli_test")
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 
-class DeviceTest(unittest.TestCase):
+class DataTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
