@@ -41,9 +41,7 @@ def pub_temp_pressure():
     print('published on tag: ', tag, ':', payload)
 
 
-device = zdm.ZDMClient(device_id=device_id)
-device.set_password(password)
-device.connect()
+z
 
 while True:
     time.sleep(2)

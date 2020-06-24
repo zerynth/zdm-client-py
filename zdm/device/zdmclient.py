@@ -19,7 +19,7 @@ import time
 
 from .mqtt import MQTTClient
 from ..logging import MyLogger
-from .constants import MQTT_DEVICE_REQ_PREFIX, MQTT_JOB_PREFIX, MQTT_PRIVATE_PREFIX, MQTT_STRONG_PRIVATE_PREFIX
+from .constants import MQTT_PREFIX_REQ_DEV, MQTT_PREFIX_JOB, MQTT_PREFIX_PRIVATE_STATUS, MQTT_PREFIX_STRONG_PRIVATE_STATUS
 
 logger = MyLogger().get_logger()
 
@@ -39,6 +39,7 @@ The ZDMClient class
 
     * :samp:`device_id` is the id of the device.
     * :samp:`jobs` is the dictionary that defines the device's available jobs (default None).
+    * :samp:`conditions` is the list of condition tags that the device can use (default []).
     * :samp:`endpoint` is the url of the ZDM broker (default rmq.zdm.zerynth.com).
     * :samp:`verbose` boolean flag for verbose output (default False).
     * :samp:`time_callback` is a function that is called when timestamps are received after the timestamp is requested.
@@ -117,11 +118,11 @@ The ZDMClient class
         self.mqttClient.subscribe(self.dn_topic, callback=self._handle_dn_msg)
 
     def _request_status(self):
-        self._send_up_msg(MQTT_DEVICE_REQ_PREFIX, "status")
+        self._send_up_msg(MQTT_PREFIX_REQ_DEV, "status")
         logger.debug("Status requested")
 
     def request_timestamp(self):
-        self._send_up_msg(MQTT_DEVICE_REQ_PREFIX, "now")
+        self._send_up_msg(MQTT_PREFIX_REQ_DEV, "now")
         logger.debug("Timestamps requested")
 
     def _send_manifest(self):
@@ -129,7 +130,7 @@ The ZDMClient class
             'jobs': [k for k in self.jobs],
             'conditions': self.conditions
         }
-        self._send_up_msg(MQTT_STRONG_PRIVATE_PREFIX, "manifest", value)
+        self._send_up_msg(MQTT_PREFIX_STRONG_PRIVATE_STATUS, "manifest", value)
 
     def _send_up_msg(self, prefix, key, value={}):
         msg = {
@@ -243,7 +244,7 @@ The ZDMClient class
         if condition_tag in self.conditions:
             return Condition(self, condition_tag)
         else:
-            raise Exception("Condition tag '{}' not found. Please pass the condition on the constructor.".format(condition_tag))
+            raise Exception("Condition tag '{}' not found. Please pass the condition tag in the constructor.".format(condition_tag))
 
     def _open_condition(self, uuid, tag, start, payload={}):
         value = {
