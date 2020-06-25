@@ -28,7 +28,21 @@ class DataTest(unittest.TestCase):
         self.device.set_password(jwt)
         self.device.connect()
 
-    def test_publish_data(self):
+    def test_publish_exact_data(self):
+        num = 10
+        tag = 'tagTest'
+        for x in range(num):
+            payload = {
+                'counter': x
+            }
+            # publish payload to ZDM
+            self.device.publish(tag, payload)
+            time.sleep(1)
+
+        data = self.zapi.data.get(self.d.workspace_id, tag, self.d.id)
+        self.assertEqual(num, len(data))
+
+    def test_publish_multuple_tag(self):
         num = 3
         tags = ['tag1', 'tag2']
         for x in range(num):
@@ -38,7 +52,7 @@ class DataTest(unittest.TestCase):
                     'value': value
                 }
                 # publish payload to ZDM
-                self.device.publish_data(t, payload)
+                self.device.publish(t, payload)
                 time.sleep(1)
 
         for t in tags:

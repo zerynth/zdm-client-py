@@ -2,6 +2,12 @@
 History
 =======
 
+-----------------------
+* Added conditions and removed events
+* renamed publish_data() into publish(). Mark as deprecated the publish_data().
+* removed send_event().
+* fix job args after expected status received.
+
 0.2.0 (2020-06-16)
 ----------------------------
 * Added Conditions and removed the events.

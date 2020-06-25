@@ -61,3 +61,31 @@ class ConditionsTest(unittest.TestCase):
         # printing lowercase
         letters = string.ascii_lowercase
         return ''.join(random.choice(letters) for i in range(10))
+
+    def test_request_conditions(self):
+        """
+        Simulate the case in which the device open two conditions.
+        Than it requests the open conditions and close them.
+        """
+        def on_open_conditions(client, conditions):
+            for c in conditions:
+                c.close()
+
+        self.device._on_open_conditions = on_open_conditions
+
+        tag = self._rand_name()
+        tag1 = self._rand_name()
+        self.device.conditions = [tag, tag1]
+        c = self.device.get_condition(tag)
+        c.open({"data": "0"})
+        cond = self.zapi.conditions.list(self.d.workspace_id, tag, device_id=self.d.id, status="open")
+        self.assertEqual(1, len(cond))
+        time.sleep(2)
+        self.device.request_open_conditions()
+        # wait close conditions
+        time.sleep(5)
+        cond = self.zapi.conditions.list(self.d.workspace_id, tag, device_id=self.d.id, status="open")
+        self.assertEqual(0, len(cond))
+        cond_close = self.zapi.conditions.list(self.d.workspace_id, tag, device_id=self.d.id, status="closed")
+        self.assertEqual(1, len(cond_close))
+

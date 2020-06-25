@@ -21,7 +21,9 @@ device.connect()
 while True:
     condition = device.get_condition(condition_tag)
     condition.open(payload={"door": "1"})
-    # simulate a time that the dor is open
+    # do other stuff
     time.sleep(15)
+    # close the condition
     condition.close()
+    # reset the condition in order to open it again
     condition.reset()

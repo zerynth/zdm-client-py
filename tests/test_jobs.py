@@ -33,8 +33,9 @@ class JobsTest(unittest.TestCase):
         def test_job(zdmclient, args):
             global received
             received = True
-            print("Executing job set_temp. Received args: {}".format(args))
-            return {"msg": "Temperature set correctly."}
+            print("Executing job. Received args: {}".format(args))
+            ct = args['count']
+            return {"count": ct + 1}
 
         job = "myJob"
         my_jobs = {
@@ -43,12 +44,12 @@ class JobsTest(unittest.TestCase):
 
         self.device.jobs = my_jobs
 
-        self.zapi.jobs.schedule(job, {"value": 45}, [self.d.id], on_time="")
+        self.zapi.jobs.schedule(job, {"count": 0}, [self.d.id], on_time="")
         time.sleep(6)
         self.assertEqual(True, received)
         status = self.zapi.jobs.status_current(job, self.d.id)
         self.assertEqual("@" + job, status.key)
-        self.assertEqual({"msg": "Temperature set correctly."}, status.value)
+        self.assertEqual(1, status.value['count'])
 
     def test_fota_not_supported(self):
         job = "fota"
@@ -64,4 +65,22 @@ class JobsTest(unittest.TestCase):
         time.sleep(6)
         status = self.zapi.jobs.status_current(job, self.d.id)
         # self.assertEqual("@" + job, status.key)
+        self.assertIn("error", status.value.keys())
+
+    def test_job_raise_expection(self):
+        job = "myJobException"
+
+        def job_exc(zdmclient, args):
+            raise Exception("Some error occur")
+
+        my_jobs = {
+            job: job_exc,
+        }
+
+        self.device.jobs = my_jobs
+
+        self.zapi.jobs.schedule(job, {}, [self.d.id], on_time="")
+        time.sleep(6)
+        status = self.zapi.jobs.status_current(job, self.d.id)
+        self.assertEqual("@" + job, status.key)
         self.assertIn("error", status.value.keys())
