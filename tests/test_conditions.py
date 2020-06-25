@@ -38,7 +38,7 @@ class ConditionsTest(unittest.TestCase):
 
         self.device.conditions = [tag]
 
-        c = self.device.get_condition(tag)
+        c = self.device.new_condition(tag)
 
         c.open({"data": "ok-test"})
         time.sleep(5)
@@ -54,7 +54,7 @@ class ConditionsTest(unittest.TestCase):
 
     def test_get_non_existing(self):
         with self.assertRaises(Exception) as context:
-            self.device.get_condition("not-ed")
+            self.device.new_condition("not-ed")
         self.assertTrue('not found' in str(context.exception))
 
     def _rand_name(self):
@@ -76,7 +76,7 @@ class ConditionsTest(unittest.TestCase):
         tag = self._rand_name()
         tag1 = self._rand_name()
         self.device.conditions = [tag, tag1]
-        c = self.device.get_condition(tag)
+        c = self.device.new_condition(tag)
         c.open({"data": "0"})
         cond = self.zapi.conditions.list(self.d.workspace_id, tag, device_id=self.d.id, status="open")
         self.assertEqual(1, len(cond))

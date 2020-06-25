@@ -19,7 +19,9 @@ device.set_password(password)
 device.connect()
 
 while True:
-    condition = device.get_condition(condition_tag)
+
+    condition = device.new_condition(condition_tag)
+
     condition.open(payload={"door": "1"})
     # do other stuff
     time.sleep(15)

@@ -59,7 +59,7 @@ The ZDMClient class
         self.zdm_endpoint = endpoint
         self.mqttClient = MQTTClient(mqtt_id=device_id)
 
-        self._time_callback = timestamp_cb
+        self._on_timestamp = timestamp_cb
         self._on_open_conditions = open_conditions_cb
 
         self.data_topic = '/'.join(['j', 'data', device_id])
@@ -154,7 +154,7 @@ The ZDMClient class
 
     def request_open_conditions(self):
         """
-    .. method:: request_conditions()
+    .. method:: request_open_conditions()
 
     Request all the open conditions of the device not yet closed.
     It returns a dictionary with uuid of conditions as keys, and value a dictionary containing
@@ -162,7 +162,7 @@ The ZDMClient class
     """
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "conditions")
 
-    def get_condition(self, condition_tag):
+    def new_condition(self, condition_tag):
         if condition_tag in self.conditions:
             return Condition(self, condition_tag)
         else:
@@ -224,11 +224,11 @@ The ZDMClient class
         if delta_key == 'status':
             self._handle_delta_status(args)
         elif delta_key == 'now':
-            if self._time_callback is None:
+            if self._on_timestamp is None:
                 logger.error("to ask timestamp, you must install a time_callback first")
                 raise Exception("No timestamp callback initialized")
             else:
-                self._time_callback(self, args)
+                self._on_timestamp(self, args)
         elif delta_key == 'conditions':
             self._handle_delta_conditions(args)
         else:

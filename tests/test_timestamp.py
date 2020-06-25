@@ -39,7 +39,7 @@ class TimeTest(unittest.TestCase):
             isTimeReceived = True
             print("{} Timestamp received: {}".format(isTimeReceived, arg))
 
-        self.device._time_callback = time_callback
+        self.device._on_timestamp = time_callback
 
         self.device.request_timestamp()
         time.sleep(5)

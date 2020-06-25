@@ -20,6 +20,7 @@ condition_tag = "tag1"
 def on_open_conditions(zclient, conditions):
     for c in conditions:
         print("Open condition: {}".format(c))
+
         c.close()
 
 
@@ -27,7 +28,7 @@ device = ZDMClient(device_id=device_id, conditions=[condition_tag], open_conditi
 device.set_password(password)
 device.connect()
 
-condition = device.get_condition(condition_tag)
+condition = device.new_condition(condition_tag)
 condition.open(payload={"door": "1"})
 # do other stuff
 time.sleep(2)
