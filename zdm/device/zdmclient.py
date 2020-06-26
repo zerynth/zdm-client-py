@@ -361,8 +361,7 @@ class Condition:
 
         self.client._close_condition(self.uuid, self.finish, payload)
 
-
-    def renew(self):
+    def reset(self):
         self.uuid = self._gen_uuid()
         self.start = None
         self.finish = None

@@ -1,10 +1,7 @@
 """
 conditions.py
 
-The example show how to use conditions for monitoring the level of a battery.
-It create a new condition with the tag "battery" and it open it when the battery is low,
-and close it when the battery is high.
-In order to reopen the same condition on the same tag, the reset method is used.
+The example shows how to request the open conditions (the conditions that are not closed) to the ZDM.
 
 """
 import time
@@ -22,10 +19,8 @@ condition_tag = "battery"
 # this function is called when the list of open conditions are received.
 def on_open_conditions(zclient, conditions):
     for c in conditions:
-        print("Open condition: {}".format(c))
-
+        print("### closing the condition: {}".format(c))
         c.close()
-
 
 device = ZDMClient(device_id=device_id, condition_tags=[condition_tag], on_open_conditions=on_open_conditions, endpoint="mqtt.zdm.test.zerynth.com")
 device.set_password(password)
