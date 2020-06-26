@@ -44,7 +44,7 @@ class TimeTest(unittest.TestCase):
         self.device.request_timestamp()
         time.sleep(5)
         self.assertTrue(isTimeReceived)
-
-    def test_no_timestamp_cb(self):
-        self.device.request_timestamp()
-        time.sleep(5)
+    #
+    # def test_no_timestamp_cb(self):
+    #     self.device.request_timestamp()
+    #     time.sleep(5)
