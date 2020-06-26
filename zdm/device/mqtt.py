@@ -2,9 +2,11 @@ import json
 
 import paho.mqtt.client as mqtt
 
-from ..logging import MyLogger
+from ..logging import ZdmLogger
 
-logger = MyLogger().get_logger()
+from .constants import MQTT_PREFIX_JOB, MQTT_PREFIX_REQ_DEV, MQTT_PREFIX_PRIVATE_STATUS, MQTT_PREFIX_STRONG_PRIVATE_STATUS
+
+logger = ZdmLogger().get_logger()
 
 
 class MQTTClient:
@@ -18,6 +20,8 @@ class MQTTClient:
         self.client.on_disconnect = self.on_disconnect
         self.client.on_message = self.on_message
         self.client.on_publish = self.on_publish
+
+        self._ready_msg = {}  # used only for caching the messages to be sent, and print the when they are effectively sent to the broker
 
         self.connected = False
 
@@ -53,16 +57,24 @@ class MQTTClient:
 
     def publish(self, topic, payload=None, qos=1):
         if type(payload) is dict:
-            payload = json.dumps(payload)
+            payload_str = json.dumps(payload)
         try:
-            ret = self.client.publish(topic, payload, qos=qos)
-            #ret.wait_for_publish()
+            ret = self.client.publish(topic, payload_str, qos=qos)
+            self._ready_msg[ret.mid] = payload
         except Exception as e:
             logger.error("Error" + e)
 
     def on_publish(self, client, userdata, mid):
-        logger.info("Sent message: {}".format(mid))
-        logger.debug("#{} msg published succesfully. ".format(mid))
+        payload = self._ready_msg[mid]
+        if "key" in payload:
+            k = payload["key"]
+            if k.startswith((MQTT_PREFIX_JOB, MQTT_PREFIX_REQ_DEV, MQTT_PREFIX_PRIVATE_STATUS, MQTT_PREFIX_STRONG_PRIVATE_STATUS)):
+                logger.debug("Publish message: {}".format(payload))
+            else:
+                logger.info("Publish message: {}".format(payload))
+        else:
+            logger.info("Publish message: {}".format(payload))
+        self._ready_msg.pop(mid, None)
 
     def on_message(self, userdata, msg):
         logger.debug("Message received: {}".format(msg))
@@ -73,6 +85,3 @@ class MQTTClient:
 
         if callback:
             self.client.message_callback_add(topic, callback)
-
-    # def loop(self):
-    #     self.client.loop_forever()

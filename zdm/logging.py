@@ -15,7 +15,7 @@ class SingletonType(type):
 
 
 # python 3 style
-class MyLogger(object, metaclass=SingletonType):
+class ZdmLogger(object, metaclass=SingletonType):
     """ A singleton containing the logging settings """
     # __metaclass__ = SingletonType   # python 2 Style
     _logger = None
