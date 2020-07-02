@@ -48,9 +48,9 @@ The ZDMClient class
     """
 
     def __init__(self, device_id,
+                 endpoint=ENDPOINT,
                  jobs={},
                  condition_tags=[],
-                 endpoint=ENDPOINT,
                  verbose=False,
                  on_timestamp=None,
                  on_open_conditions=None):
@@ -159,8 +159,6 @@ The ZDMClient class
     .. method:: request_open_conditions()
 
     Request all the open conditions of the device not yet closed.
-    It returns a dictionary with uuid of conditions as keys, and value a dictionary containing
-    condition's tag and start time.
     """
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "conditions")
 
@@ -233,16 +231,19 @@ The ZDMClient class
         if delta_key == 'status':
             self._handle_delta_status(args)
         elif delta_key == 'now':
-            if self._on_timestamp is None:
-                logger.error("to ask timestamp, you must install a time_callback first")
-                raise Exception("No timestamp callback initialized")
-            else:
-                self._on_timestamp(self, args)
+            self._handle_delta_timestamp(args)
         elif delta_key == 'conditions':
             self._handle_delta_conditions(args)
         else:
             print("zlib_zdm.Device.handle_delta_request received user-defined delta")
             # TODO pass custom delta_key and arg to user callback?
+
+    def _handle_delta_timestamp(self, arg):
+        if self._on_timestamp is None:
+            logger.error("to ask timestamp, you must initialize a time_callback first")
+            raise Exception("No timestamp callback initialized")
+        else:
+            self._on_timestamp(self, arg)
 
     def _handle_delta_status(self, arg):
         logger.debug("Received a delta status. Msg:{}".format(arg))
@@ -317,24 +318,6 @@ The ZDMClient class
         # ex.  data/<deviceid>/<TAG>/
         return '/'.join([self.data_topic, tag])
 
-    def _open_condition(self, uuid, tag, start, payload={}):
-        value = {
-            'uuid': uuid,
-            'tag': tag,
-            'payload': {} if payload is None else payload,
-            'start': start
-        }
-        self._send_up_msg('', 'condition', value)
-
-    def _close_condition(self, uuid, finish, payload):
-        value = {
-            'uuid': uuid,
-            'finish': finish,
-            'payload': payload
-        }
-        self._send_up_msg('', 'condition', value)
-
-
 class Condition:
     def __init__(self, client, tag):
         self.uuid = self._gen_uuid()
@@ -344,13 +327,32 @@ class Condition:
         self.start = None
         self.finish = None
 
+    def get_id(self):
+        return str(self.uuid)
+
+    def get_tag(self):
+        return self.tag
+
+    def get_start(self):
+        return str(self.start)
+
+    def get_finish(self):
+        return str(self.finish)
+
     def open(self, payload=None, start=None):
         if start is None:
             d = datetime.datetime.utcnow()
             self.start = d.isoformat("T") + "Z"
         else:
             self.start = start
-        self.client._open_condition(self.uuid, self.tag, self.start, payload)
+        value = {
+            'uuid': self.get_id(),
+            'tag': self.get_tag(),
+            'payload': payload,
+            'start': self.get_start(),
+        }
+
+        self.client._send_up_msg('', 'condition', value)
 
     def close(self, payload=None, finish=None):
         if finish is None:
@@ -358,8 +360,12 @@ class Condition:
             self.finish = d.isoformat("T") + "Z"
         else:
             self.finish = finish
-
-        self.client._close_condition(self.uuid, self.finish, payload)
+        value = {
+            'uuid': self.get_id(),
+            'payload': payload,
+            'finish': self.get_finish()
+        }
+        self.client._send_up_msg('', 'condition', value)
 
     def reset(self):
         self.uuid = self._gen_uuid()
