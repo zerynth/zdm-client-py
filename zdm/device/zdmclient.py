@@ -191,7 +191,7 @@ The ZDMClient class
 
             if method.startswith(MQTT_PREFIX_JOB):
                 delta_method = method[1:]
-                self._handle_job_request(delta_method, args)
+                self._handle_job_request(delta_method, value)
             elif method.startswith(MQTT_PREFIX_REQ_DEV):
                 delta_method = method[1:]
                 self._handle_delta_request(delta_method, value)
