@@ -13,7 +13,7 @@ init_all()
 #  password: Pippo123
 if os.environ['ZERYNTH_TESTMODE'] == '1':
     ENDPOINT = "rmq.localhost"
-    os.environ.setdefault("ZERYNTH_ZDM_URL", "http://api.adm.localhost")
+    os.environ.setdefault("ZERYNTH_ZDM_URL", "http://api.zdm.localhost")
 elif os.environ['ZERYNTH_TESTMODE'] == '2':
     ENDPOINT = "mqtt.zdm.test.zerynth.com"
 elif os.environ['ZERYNTH_TESTMODE'] == '3':

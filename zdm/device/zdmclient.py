@@ -46,16 +46,15 @@ The ZDMClient class
     * :samp:`on_open_conditions` called when the ZDM responds to the open conditions request. on_open_conditions(client, conditions)
 
     """
-
     def __init__(self, device_id,
                  endpoint=ENDPOINT,
-                 jobs={},
+                 jobs_dict={},
                  condition_tags=[],
                  verbose=False,
                  on_timestamp=None,
                  on_open_conditions=None):
         self.mqtt_id = device_id
-        self.jobs = jobs
+        self.jobs = jobs_dict
         self.condition_tags = condition_tags
 
         self.zdm_endpoint = endpoint
@@ -69,6 +68,7 @@ The ZDMClient class
         self.dn_topic = '/'.join(['j', 'dn', device_id])
         if verbose:
             logger.setLevel(logging.DEBUG)
+
 
     def id(self):
         """
@@ -133,7 +133,6 @@ The ZDMClient class
         """
         topic = self._build_ingestion_topic(tag)
         self.mqttClient.publish(topic, payload)
-        logger.info("Message published correctly. Msg: {}, topic:{}".format(payload, topic))
 
     # # @Deprecated.  Use the get_condition() and open() and close() method
     # def send_event(self, value):
@@ -298,6 +297,8 @@ The ZDMClient class
             'jobs': [k for k in self.jobs],
             'conditions': self.condition_tags
         }
+        value = [k for k in self.jobs]
+
         self._send_up_msg(MQTT_PREFIX_STRONG_PRIVATE_STATUS, "manifest", value)
 
     def _send_up_msg(self, prefix, key, value={}):
@@ -305,6 +306,7 @@ The ZDMClient class
             'key': prefix + key,
             'value': value
         }
+        logger.info(msg)
         self.mqttClient.publish(self.up_topic, msg)
 
     # @deprecated method. Use the send_up_msg

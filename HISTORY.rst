@@ -1,12 +1,13 @@
 =======
 History
 =======
-
+(to be released)
 -----------------------
 * Added conditions and removed events
 * requests timestamp
 * renamed publish_data() into publish(). Mark as deprecated the publish_data().
 * fix job args after expected status received.
+* Renamed jobs parameters into jobs_dict of the ZDMClient.
 
 0.2.0 (2020-06-16)
 ----------------------------

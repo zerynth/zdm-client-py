@@ -5,9 +5,12 @@ import paho.mqtt.client as mqtt
 from ..logging import ZdmLogger
 
 from .constants import MQTT_PREFIX_JOB, MQTT_PREFIX_REQ_DEV, MQTT_PREFIX_PRIVATE_STATUS, MQTT_PREFIX_STRONG_PRIVATE_STATUS
+import sys
 
 logger = ZdmLogger().get_logger()
 
+# def on_message(c, u, m):
+#     print("###############################")
 
 class MQTTClient:
 
@@ -18,7 +21,7 @@ class MQTTClient:
 
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
-        self.client.on_message = self.on_message
+        self.client.on_message = self.on_message #on_message #
         self.client.on_publish = self.on_publish
 
         self._ready_msg = {}  # used only for caching the messages to be sent, and print the when they are effectively sent to the broker
@@ -41,7 +44,7 @@ class MQTTClient:
         # 3: Connection refused - server unavailable
         # 4: Connection refused - bad username or password
         # 5: Connection refused - not authorised 6-255: Currently unused.
-        logger.debug("On connect flags:{}, rc:{}".format(flags, rc))
+        logger.info("On connect flags:{}, rc:{}".format(flags, mqtt.error_string(rc)))
         if rc == 0:
             self.connected = True
             logger.info("Successfully connected. Returned code={}".format(rc))
@@ -50,14 +53,19 @@ class MQTTClient:
             logger.error("Error in connection. Returned code={}".format(rc))
 
     def on_disconnect(self, client, userdata, rc):
+        logger.info("On disconnect rc:{}".format(rc))
         if rc != 0:
             logger.error("Unexpected disconnection. Return code={}".format(rc))
         else:
             logger.warning("Client disconnected after disconnect() is called. Return code={}".format(rc))
+        # TODO; call loop_stop() ??
+        # loop_stop
 
     def publish(self, topic, payload=None, qos=1):
-        if type(payload) is dict:
+        if isinstance(payload, dict):
             payload_str = json.dumps(payload)
+        else:
+            payload_str = payload
         try:
             ret = self.client.publish(topic, payload_str, qos=qos)
             self._ready_msg[ret.mid] = payload
@@ -76,12 +84,11 @@ class MQTTClient:
             logger.info("Publish message: {}".format(payload))
         self._ready_msg.pop(mid, None)
 
-    def on_message(self, userdata, msg):
-        logger.debug("Message received: {}".format(msg))
+    def on_message(self, client, userdata, msg):
+        logger.info("#################### Message received: {}".format(msg))
 
     def subscribe(self, topic, callback=None, qos=1):
         self.client.subscribe(topic=topic, qos=qos)
         logger.debug("Subscribed to topic: {}".format(topic))
-
         if callback:
             self.client.message_callback_add(topic, callback)

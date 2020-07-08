@@ -31,9 +31,22 @@ password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNDY5NTE
 device_id = 'dev-51fp75qtkfg6'
 password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNDcxMDc1NSwiaWF0IjoxNTkzMTc0NzU1LCJzdWIiOiJkZXYtNTFmcDc1cXRrZmc2In0.mfn8CL93rqJxFp0TojuGB1FisEFo5SZaLKBeSK4QZBk'
 
+device_id = 'dev-5216sexaivwm'
+password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNTIzMjQ5MiwiaWF0IjoxNTkzNjk2NDkyLCJzdWIiOiJkZXYtNTIxNnNleGFpdndtIn0.jAJk1_v63kQou_5rha7PavgpbECZ1HIDgtHOkdhD97Y'
+
+device_id = 'dev-51ql34p9azub'
+password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNTMyNTY3NiwiaWF0IjoxNTkzNzg5Njc2LCJzdWIiOiJkZXYtNTFxbDM0cDlhenViIn0._Nf3906N2VmxgOeKTqFn_s-6k2jhzx4JkLKQZWyGOVk'
+
+device_id = 'dev-5216sexaivwm'
+password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNTMyNjAyMiwiaWF0IjoxNTkzNzkwMDIyLCJzdWIiOiJkZXYtNTIxNnNleGFpdndtIn0.AN_qoPDwcP7HkhnbrzccV5htqyoRXzh_T-96jv6cgJY'
+
+device_id = 'dev-52i83w2lk16r'
+password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNTY0MzY3MiwiaWF0IjoxNTk0MTA3NjcyLCJzdWIiOiJkZXYtNTJpODN3MmxrMTZyIn0.bo-ZxObPnrpV4fnU9z74gJ6T0fUkTCpf7SoFlhnRgUA'
+
+
 condition_tag = "battery"
 
-device = ZDMClient(device_id=device_id, condition_tags=[condition_tag], endpoint="mqtt.zdm.stage.zerynth.com")
+device = ZDMClient(device_id=device_id, condition_tags=[condition_tag], endpoint="rmq.localhost")
 device.set_password(password)
 device.connect()
 
