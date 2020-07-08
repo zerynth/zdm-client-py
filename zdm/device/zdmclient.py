@@ -191,11 +191,6 @@ The ZDMClient class
 
             if method.startswith(MQTT_PREFIX_JOB):
                 delta_method = method[1:]
-                if "args" in value:
-                    args = value["args"]
-                else:
-                    args = {}
-                    logger.warning("ZdmClient.handle_dn_msg empty args field")
                 self._handle_job_request(delta_method, args)
             elif method.startswith(MQTT_PREFIX_REQ_DEV):
                 delta_method = method[1:]
@@ -207,6 +202,11 @@ The ZDMClient class
             logger.error("Error", e)
 
     def _handle_job_request(self, job, args):
+        if "args" in args:
+            args = args["args"]
+        else:
+           logger.warning("ZdmClient.handle_dn_msg args key not present.")
+
         if job == 'fota':
             logger.error("FOTA is not supported on ZdmClient")
             self._reply_job(job, {"error": "FOTA is not supported in the zdm client py."})
