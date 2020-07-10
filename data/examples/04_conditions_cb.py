@@ -11,9 +11,6 @@ from zdm import ZDMClient
 device_id = '*** PUT YOU DEVICE ID HERE ***'
 password = '*** PUT YOUR PASSWORD HERE ***'
 
-device_id = 'dev-51blblqx01jh'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNDYxMTI5MywiaWF0IjoxNTkzMDc1MjkzLCJzdWIiOiJkZXYtNTFibGJscXgwMWpoIn0.wVRsQ1-ieSmaN0BY4IqqJu9F3Wtrb-tUX_ubu2r3K3Q'
-
 condition_tag = "battery"
 
 # this function is called when the list of open conditions are received.
