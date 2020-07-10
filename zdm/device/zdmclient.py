@@ -108,20 +108,6 @@ The ZDMClient class
         """
         self.mqttClient.set_username_pw(self.mqtt_id, pw)
 
-    # @Deprecated. Use the method publish()
-    def publish_data(self, tag, payload):
-        """
-    .. method:: publish_data(tag, payload)
-
-        Publish a message to the ZDM.
-
-        * :samp:`tag`, is a label for the device's data into your workspace. More than one device can publish message to the same tag
-        * :samp:`payload` is the message payload, represented by a dictionary
-        """
-        topic = self._build_ingestion_topic(tag)
-        self.mqttClient.publish(topic, payload)
-        logger.info("Message published correctly. Msg: {}, topic:{}".format(payload, topic))
-
     def publish(self, tag, payload):
         """
     .. method:: publish(tag, payload)
@@ -297,7 +283,6 @@ The ZDMClient class
             'jobs': [k for k in self.jobs],
             'conditions': self.condition_tags
         }
-        value = [k for k in self.jobs]
 
         self._send_up_msg(MQTT_PREFIX_STRONG_PRIVATE_STATUS, "manifest", value)
 
@@ -364,7 +349,7 @@ class Condition:
             self.finish = finish
         value = {
             'uuid': self.get_id(),
-            'payload': payload,
+            'payloadf': payload,
             'finish': self.get_finish()
         }
         self.client._send_up_msg('', 'condition', value)
