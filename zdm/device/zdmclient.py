@@ -108,28 +108,17 @@ The ZDMClient class
         """
         self.mqttClient.set_username_pw(self.mqtt_id, pw)
 
-    def publish(self, tag, payload):
+    def publish(self, payload, tag):
         """
-    .. method:: publish(tag, payload)
+    .. method:: publish(payload, tag)
 
         Publish a message to the ZDM.
 
-        * :samp:`tag`, is a label for the device's data into your workspace. More than one device can publish message to the same tag
         * :samp:`payload` is the message payload, represented by a dictionary
+        * :samp:`tag`, is a label for the device's data into your workspace. More than one device can publish message to the same tag
         """
         topic = self._build_ingestion_topic(tag)
         self.mqttClient.publish(topic, payload)
-
-    # # @Deprecated.  Use the get_condition() and open() and close() method
-    # def send_event(self, value):
-    #     """
-    # .. method:: send_event(tag, value)
-    #
-    #    Publish an event to the ZDM.
-    #
-    #    * :samp:`value`, the value of the event as dictionary.
-    #    """
-    #     self._send_up_msg('', 'event', value)
 
     def request_status(self):
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "status")
