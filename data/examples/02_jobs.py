@@ -6,32 +6,43 @@ Show a simple example of how to define a custom job and pass it to the ZdmClient
 """
 import json
 import time
+import random
+import zdm
 
-from zdm import ZDMClient
-
-device_id = '*** PUT YOU DEVICE ID HERE ***'
-password = '*** PUT YOUR PASSWORD HERE ***'
-
-device_id = 'dev-5254v7dehgl8'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZXYtNTI1NHY3ZGVoZ2w4IiwidXNlciI6ImRldi01MjU0djdkZWhnbDgiLCJrZXkiOjEsImV4cCI6MjUxNjIzOTAyMn0.IFWAMVk-c3oI0Sl6lO-jREidtLk9g90HtVMCUhpki8s'
-
-def set_temp(zdmclient, args):
-    # zdmclient: is the object of the ZdmClient.
-    # args     : is a json with the arguments  of the function.
-    print("Executing job set_temp. Received args: {}".format(args))
-    # DO SOMETHING
-    # return: a json with the result of the job.
-    return json.dumps({"msg": "Temperature set correctly."})
+device_id = 'Your-device-id'
+password = 'Device-Password'
 
 
-# A dictionary of jobs where the key is the name of the job and value if the callback to execute.
+# This job generates and returns a random number
+def job_random(device, arg):
+    print("Executing Job random ...")
+    return {
+        'rnd': random.randint(0, 100),
+    }
+
+
+# This job adds two numbers (num1, num2) and return the result.
+def job_adder(device, arg):
+    print("Executing Job adder ...")
+    if "num1" in arg and "num2" in arg:
+        res = arg['num1'] + arg["num2"]
+        return {"res": res}
+    else:
+        return {"err": "Bad arguments. Arguments 'num1' and 'num2' must be provided."}
+
+
+# define the list of jobs exposed by the device.
+# A job is a function that receives two parameters (the device instance itself, and the arguments in a dictionary)
+# and returns the result as a dictionary.
 my_jobs = {
-    "set_temp": set_temp,
+    'jobRandom': job_random,
+    'jobAdder': job_adder,
 }
 
-device = ZDMClient(device_id=device_id, verbose=True, jobs_dict=my_jobs, endpoint="mqtt.zdm.zerynth.com")
+device = zdm.ZDMClient(device_id=device_id, jobs_dict=my_jobs)
 device.set_password(password)
 device.connect()
 
 while True:
+    print("waiting for jobs...")
     time.sleep(3)
