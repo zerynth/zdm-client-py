@@ -46,6 +46,7 @@ The ZDMClient class
     * :samp:`on_open_conditions` called when the ZDM responds to the open conditions request. on_open_conditions(client, conditions)
 
     """
+
     def __init__(self, device_id,
                  endpoint=ENDPOINT,
                  jobs_dict={},
@@ -68,7 +69,6 @@ The ZDMClient class
         self.dn_topic = '/'.join(['j', 'dn', device_id])
         if verbose:
             logger.setLevel(logging.DEBUG)
-
 
     def id(self):
         """
@@ -180,7 +180,7 @@ The ZDMClient class
         if "args" in args:
             args = args["args"]
         else:
-           logger.warning("ZdmClient.handle_dn_msg args key not present.")
+            logger.warning("ZdmClient.handle_dn_msg args key not present.")
 
         if job == 'fota':
             logger.error("FOTA is not supported on ZdmClient")
@@ -294,6 +294,7 @@ The ZDMClient class
         # ex.  data/<deviceid>/<TAG>/
         return '/'.join([self.data_topic, tag])
 
+
 class Condition:
     def __init__(self, client, tag):
         self.uuid = self._gen_uuid()
@@ -350,6 +351,13 @@ class Condition:
 
     def _gen_uuid(self):
         return str(time.time() * 1000.0)
+
+    def is_open(self):
+        """
+        .. method:: is_open()
+        Return True if the condition is open. False otherwise.
+        """
+        return self.start is not None and self.finish is None
 
     def __str__(self):
         return "Condition (id={}, tag={}, start={}, finish={})".format(self.uuid, self.tag, self.start, self.finish)
