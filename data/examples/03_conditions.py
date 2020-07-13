@@ -16,39 +16,27 @@ In recharge mode, the battery level id increased, and whenever the level reach a
 
 """
 import time
-
 from zdm import ZDMClient
 from zdm.logging import ZdmLogger
 
 logger = ZdmLogger().get_logger()
 
-device_id = '*** PUT YOU DEVICE ID HERE ***'
-password = '*** PUT YOUR PASSWORD HERE ***'
-
-device_id = 'dev-51f1yfx47lf6'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNDY5NTEyMiwiaWF0IjoxNTkzMTU5MTIyLCJzdWIiOiJkZXYtNTFmMXlmeDQ3bGY2In0.nuoq52Z4G-u25KTXy3Vkde1FIA296qwhP7bx7M2fN4k'
-
-device_id = 'dev-51fp75qtkfg6'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNDcxMDc1NSwiaWF0IjoxNTkzMTc0NzU1LCJzdWIiOiJkZXYtNTFmcDc1cXRrZmc2In0.mfn8CL93rqJxFp0TojuGB1FisEFo5SZaLKBeSK4QZBk'
-
-device_id = 'dev-5216sexaivwm'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNTIzMjQ5MiwiaWF0IjoxNTkzNjk2NDkyLCJzdWIiOiJkZXYtNTIxNnNleGFpdndtIn0.jAJk1_v63kQou_5rha7PavgpbECZ1HIDgtHOkdhD97Y'
-
-device_id = 'dev-51ql34p9azub'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNTMyNTY3NiwiaWF0IjoxNTkzNzg5Njc2LCJzdWIiOiJkZXYtNTFxbDM0cDlhenViIn0._Nf3906N2VmxgOeKTqFn_s-6k2jhzx4JkLKQZWyGOVk'
-
-device_id = 'dev-5216sexaivwm'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNTMyNjAyMiwiaWF0IjoxNTkzNzkwMDIyLCJzdWIiOiJkZXYtNTIxNnNleGFpdndtIn0.AN_qoPDwcP7HkhnbrzccV5htqyoRXzh_T-96jv6cgJY'
-
-device_id = 'dev-52i83w2lk16r'
-password = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOjEsImV4cCI6MTYyNTY0MzY3MiwiaWF0IjoxNTk0MTA3NjcyLCJzdWIiOiJkZXYtNTJpODN3MmxrMTZyIn0.bo-ZxObPnrpV4fnU9z74gJ6T0fUkTCpf7SoFlhnRgUA'
-
+device_id = 'Your-Device-Id'
+password = 'Device-Password'
 
 condition_tag = "battery"
 
-device = ZDMClient(device_id=device_id, condition_tags=[condition_tag], endpoint="rmq.localhost")
+# this function asks to ZDM for open conditions, then close it
+def on_open_conditions(device, conditions):
+    for c in conditions:
+        print("Closing: ", c)
+        c.close(payload={"callback": "condition closed by callback"})
+
+
+device = ZDMClient(device_id=device_id, condition_tags=[condition_tag], on_open_conditions=on_open_conditions)
 device.set_password(password)
 device.connect()
+
 
 # Create four conditions on the same tag.
 # Note. The condition_tag must be passed in the conditions_tags parameter of the constructor
@@ -65,32 +53,44 @@ battery_lvl_prv = 100
 recharge = False
 done = False
 
+device.request_open_conditions()
+
 while not done:
     if battery_lvl_curr > 80:
-        if recharge:
-            infoLevel.close()
+        if recharge and infoLevel.is_open():
+            print("[INFO] close condition")
+            infoLevel.close(payload={"status": "INFO", "lvl": battery_lvl_curr})
             done = True
 
     elif 60 < battery_lvl_curr <= 80:
-        if not recharge:
+        if not recharge and not infoLevel.is_open():
+            print("[INFO] open condition")
             infoLevel.open(payload={"status": "INFO", "lvl": battery_lvl_curr})
         else:
-            warningLevel.close()
+            if warningLevel.is_open():
+                print("[WARNING] close condition")
+                warningLevel.close(payload={"status": "WARNING", "lvl": battery_lvl_curr})
 
     elif 40 < battery_lvl_curr <= 60:
-        if not recharge:
+        if not recharge and not warningLevel.is_open():
+            print("[WARNING] open condition")
             warningLevel.open(payload={"status": "WARNING", "lvl": battery_lvl_curr})
         else:
-            criticalLevel.close()
+            if criticalLevel.is_open():
+                print("[CRITICAL] close condition")
+                criticalLevel.close(payload={"status": "CRITICAL", "lvl": battery_lvl_curr})
 
     elif 20 < battery_lvl_curr <= 40:
-        if not recharge:
+        if not recharge and not criticalLevel.is_open():
+            print("[CRITICAL] open condition")
             criticalLevel.open(payload={"status": "CRITICAL", "lvl": battery_lvl_curr})
         else:
-            fatalLevel.close()
-
+            if fatalLevel.is_open():
+                print("[FATAL] close condition")
+                fatalLevel.close(payload={"status": "FATAL", "lvl": battery_lvl_curr})
     elif 10 < battery_lvl_curr <= 20:
-        if recharge:
+        if not recharge and not fatalLevel.is_open():
+            print("[FATAL] open condition")
             fatalLevel.open(payload={"status": "FATAL", "lvl": battery_lvl_curr})
 
     elif 0 < battery_lvl_curr <= 10:

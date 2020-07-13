@@ -8,8 +8,8 @@ import time
 
 from zdm import ZDMClient
 
-device_id = '*** PUT YOU DEVICE ID HERE ***'
-password = '*** PUT YOUR PASSWORD HERE ***'
+device_id = 'Your-device-id'
+password = 'Device-Password'
 
 isTimeReceived = False
 
@@ -18,11 +18,10 @@ def time_callback(zdmclient, arg):
     isTimeReceived = True
     print("Timestamp received: {}".format(arg))
 
-device = ZDMClient(device_id=device_id, time_callback=time_callback)
+device = ZDMClient(device_id=device_id, on_timestamp=time_callback)
 
 device.set_password(password)
 device.connect()
-
 
 device.request_timestamp()
 

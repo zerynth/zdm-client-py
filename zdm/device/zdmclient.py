@@ -33,7 +33,7 @@ class ZDMClient:
 The ZDMClient class
 ================
 
-.. class:: ZDMClient(device_id, jobs=None, endpoint=ENDPOINT, verbose=False, time_callback=None)
+.. class:: ZDMClient(device_id, jobs=None, endpoint=ENDPOINT, verbose=False, on_timestamp=None)
 
     Creates a ZDM client instance with device id :samp:`device_id`. All other parameters are optional and have default values.
 
@@ -214,7 +214,7 @@ The ZDMClient class
 
     def _handle_delta_timestamp(self, arg):
         if self._on_timestamp is None:
-            logger.error("to ask timestamp, you must initialize a time_callback first")
+            logger.error("to ask timestamp, you must initialize [on_timestamp] function first")
             raise Exception("No timestamp callback initialized")
         else:
             self._on_timestamp(self, arg)

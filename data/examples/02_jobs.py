@@ -4,7 +4,6 @@ jobs.py
 Show a simple example of how to define a custom job and pass it to the ZdmClient.
 
 """
-import json
 import time
 import random
 import zdm
