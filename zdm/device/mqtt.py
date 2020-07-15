@@ -14,9 +14,12 @@ logger = ZdmLogger().get_logger()
 
 class MQTTClient:
 
-    def __init__(self, mqtt_id, ssl_ctx=None):
-        # TODO: pass clean session as parameter
-        self.client = mqtt.Client(mqtt_id, clean_session=False)
+# MQTTClient(mqtt_id=self._creds.device_id,
+#            clean_session=self._cfg.clean_session,
+#            cycle_timeout=self._cfg.cycle_timeout,
+#            command_timeout=self._cfg.command_timeout)
+    def __init__(self, mqtt_id, clean_session=False, ssl_ctx=None):
+        self.client = mqtt.Client(mqtt_id, clean_session=clean_session)
         self.ssl_ctx = ssl_ctx
 
         self.client.on_connect = self.on_connect

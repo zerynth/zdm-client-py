@@ -26,6 +26,9 @@ logger = ZdmLogger().get_logger()
 ENDPOINT = "mqtt.zdm.zerynth.com"
 PORT = 1883
 
+from .credentials import Config
+from .credentials import Credentials
+
 
 class ZDMClient:
     """
@@ -47,26 +50,37 @@ The ZDMClient class
 
     """
 
-    def __init__(self, device_id,
-                 endpoint=ENDPOINT,
+    def __init__(self,
+                 cred=None,
+                 cfg=None,
                  jobs_dict={},
                  condition_tags=[],
                  verbose=False,
                  on_timestamp=None,
                  on_open_conditions=None):
-        self.mqtt_id = device_id
+        # get configuration
+        self._cfg = Config() if cfg is None else cfg
+        self._creds = Credentials() if cred is None else cred
+
+        self.mqtt = MQTTClient(mqtt_id=self._creds.device_id,
+                               clean_session=self._cfg.clean_session)
+
+        # TODO: check credentials with zdm client py
+        self._set_mqtt_credentials(self.mqtt)
+
+        # self.mqtt_id = device_id
+        # self.zdm_endpoint = endpoint
+        # self.mqttClient = MQTTClient(mqtt_id=device_id)
+
         self.jobs = jobs_dict
         self.condition_tags = condition_tags
-
-        self.zdm_endpoint = endpoint
-        self.mqttClient = MQTTClient(mqtt_id=device_id)
 
         self._on_timestamp = on_timestamp
         self._on_open_conditions = on_open_conditions
 
-        self.data_topic = '/'.join(['j', 'data', device_id])
-        self.up_topic = '/'.join(['j', 'up', device_id])
-        self.dn_topic = '/'.join(['j', 'dn', device_id])
+        self.data_topic = '/'.join(['j', 'data', self._creds.device_id])
+        self.up_topic = '/'.join(['j', 'up', self._creds.device_id])
+        self.dn_topic = '/'.join(['j', 'dn', self._creds.device_id])
         if verbose:
             logger.setLevel(logging.DEBUG)
 
@@ -149,6 +163,9 @@ The ZDMClient class
             raise Exception(
                 "Condition tag '{}' not found. Please initialize condition tag in the constructor.".format(
                     condition_tag))
+
+    def _set_mqtt_credentials(self, client):
+        self._creds.configure_mqtt_client(client)
 
     def _handle_dn_msg(self, client, data, msg):
         try:
