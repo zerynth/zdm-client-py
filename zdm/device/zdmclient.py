@@ -25,7 +25,6 @@ The ZDMClient class
 .. class:: ZDMClient(cred=None, cfg=None,  jobs_dict={}, condition_tags=[], on_timestamp=None, on_open_conditions=None, verbose=False, )
 
     Creates a ZDM client instance.
-    By default
 
     * :samp:`cred` is the object that contains the credentials of the device. If None the configurations are read from zdevice.json file.
     * :samp:`cfg` is the object that contains the mqtt configurations. If None set the default configurations.
@@ -106,7 +105,7 @@ The ZDMClient class
         Publish a message to the ZDM.
 
         * :samp:`payload` is a dictionary containing the payload.
-        * :samp:`tag`, is the tag associated to the published payload.
+        * :samp:`tag` is the tag associated to the published payload.
         """
         topic = self._build_ingestion_topic(tag)
         self.mqttClient.publish(topic, payload)
@@ -119,7 +118,8 @@ The ZDMClient class
         """
     .. method:: request_timestamp()
 
-    Request the timestamp to the ZDM.
+        Request the timestamp to the ZDM.
+        When the timestamp is received, the callback  :samp:`on_timestamp` is called.
     """
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "now")
         logger.debug("Timestamps requested")
@@ -128,20 +128,18 @@ The ZDMClient class
         """
     .. method:: request_open_conditions()
 
-    Request all the open conditions of the device not yet closed.
+        Request all the open conditions of the device not yet closed.
+        When the open conditions are received, the callback :samp:`on_open_conditions` is called.
     """
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "conditions")
 
     def new_condition(self, condition_tag):
         """
-    .. method:: new_condition()
+    .. method:: new_condition(condition_tag)
 
-    Create and return a new condition.
-         * :samp:`condition_tag`, the tag of the new condition.
+        Create and return a new condition.
 
-
-    .. highlight:: python
-        d = 4
+         * :samp:`condition_tag` the tag as string of the new condition.
     """
         if condition_tag in self.condition_tags:
             return Condition(self, condition_tag)
@@ -299,6 +297,19 @@ The ZDMClient class
 
 
 class Condition:
+    """
+====================
+The Conditions class
+=====================
+
+.. class:: Condition(client, tag)
+
+   Creates a Condition on a tag.
+
+   * :samp:`client` is the object ZDMClient object used to open and close the condition.
+   * :samp:`tag` is the tag associated with the condition.
+   """
+
     def __init__(self, client, tag):
         self.uuid = self._gen_uuid()
         self.tag = tag
@@ -320,6 +331,15 @@ class Condition:
         return str(self.finish)
 
     def open(self, payload=None, start=None):
+        """
+        .. method:: open(payload, finish)
+
+        Open a condition.
+
+        * :samp:`payload` is a dictionary containing custom data to associated with the open operation.
+        * :samp:`start` is a time (RFC3339) used to set the opening time. If None is automatically set with the current time.
+
+        """
         if start is None:
             d = datetime.datetime.utcnow()
             self.start = d.isoformat("T") + "Z"
@@ -335,6 +355,15 @@ class Condition:
         self.client._send_up_msg('', 'condition', value)
 
     def close(self, payload=None, finish=None):
+        """
+        .. method:: close(payload, finish)
+
+        Close a condition.
+
+        * :samp:`payload` is a dictionary containing custom data to associated with the close operation.
+        * :samp:`finish` is a time (RFC3339) used to set the closing time. If None is automatically set with the current time.
+
+        """
         if finish is None:
             d = datetime.datetime.utcnow()
             self.finish = d.isoformat("T") + "Z"
@@ -348,17 +377,25 @@ class Condition:
         self.client._send_up_msg('', 'condition', value)
 
     def reset(self):
+        """
+    .. method:: reset()
+
+        Reset the condition by generating a new id.
+    """
         self.uuid = self._gen_uuid()
         self.start = None
         self.finish = None
 
     def _gen_uuid(self):
+        """"""
         return str(time.time() * 1000.0)
 
     def is_open(self):
         """
         .. method:: is_open()
-        Return True if the condition is open. False otherwise.
+
+            Return True if the condition is open. False otherwise.
+
         """
         return self.start is not None and self.finish is None
 
