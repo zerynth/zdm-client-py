@@ -1,17 +1,3 @@
-"""
-.. module:: zerynthzdmclient
-
-.. _lib.zerynth.zdmclient:
-
-**********************
-ZDM Client Python
-**********************
-
-The Zerynth ZDM Client is a Python implementation of a client of the ZDM.
-It can be used to emulate a Zerynth device and connect it to the ZDM.
-
-    """
-
 import datetime
 import json
 import logging
@@ -36,17 +22,18 @@ class ZDMClient:
 The ZDMClient class
 ================
 
-.. class:: ZDMClient(device_id, jobs=None, endpoint=ENDPOINT, verbose=False, on_timestamp=None)
+.. class:: ZDMClient(cred=None, cfg=None,  jobs_dict={}, condition_tags=[], on_timestamp=None, on_open_conditions=None, verbose=False, )
 
-    Creates a ZDM client instance with device id :samp:`device_id`. All other parameters are optional and have default values.
+    Creates a ZDM client instance.
+    By default
 
-    * :samp:`device_id` is the id of the device.
-    * :samp:`jobs` is the dictionary that defines the device's available jobs (default None).
+    * :samp:`cred` is the object that contains the credentials of the device. If None the configurations are read from zdevice.json file.
+    * :samp:`cfg` is the object that contains the mqtt configurations. If None set the default configurations.
+    * :samp:`jobs_dict` is the dictionary that defines the device's available jobs (default None).
     * :samp:`condition_tags` is the list of condition tags that the device can open and close (default []).
-    * :samp:`endpoint` is the url of the ZDM broker (default rmq.zdm.zerynth.com).
     * :samp:`verbose` boolean flag for verbose output (default False).
-    * :samp:`on_timestamp` called when the ZDM responds to the timestamp request. on_timestamp(client, timestamp)
-    * :samp:`on_open_conditions` called when the ZDM responds to the open conditions request. on_open_conditions(client, conditions)
+    * :samp:`on_timestamp` callback called when the ZDM responds to the timestamp request. on_timestamp(client, timestamp)
+    * :samp:`on_open_conditions` callback called when the ZDM responds to the open conditions request. on_open_conditions(client, conditions)
 
     """
 
@@ -55,22 +42,17 @@ The ZDMClient class
                  cfg=None,
                  jobs_dict={},
                  condition_tags=[],
-                 verbose=False,
                  on_timestamp=None,
-                 on_open_conditions=None):
+                 on_open_conditions=None,
+                 verbose=False):
+
         # get configuration
         self._cfg = Config() if cfg is None else cfg
         self._creds = Credentials() if cred is None else cred
 
-        self.mqtt = MQTTClient(mqtt_id=self._creds.device_id,
-                               clean_session=self._cfg.clean_session)
-
-        # TODO: check credentials with zdm client py
-        self._set_mqtt_credentials(self.mqtt)
-
-        # self.mqtt_id = device_id
-        # self.zdm_endpoint = endpoint
-        # self.mqttClient = MQTTClient(mqtt_id=device_id)
+        self.mqttClient = MQTTClient(mqtt_id=self._creds.device_id,
+                                     clean_session=self._cfg.clean_session)
+        self._set_mqtt_credentials(self.mqttClient)
 
         self.jobs = jobs_dict
         self.condition_tags = condition_tags
@@ -96,12 +78,15 @@ The ZDMClient class
         """
 .. method:: connect()
 
-        Connect your device to the ZDM. You must set device's password first. It also enable your device to receive incoming messages.
+        Connect your device to the ZDM.
         """
         for _ in range(5):
             try:
                 logger.info("ZDMClient.connect attempt")
-                self.mqttClient.connect(host=self.zdm_endpoint, port=PORT)
+                self.mqttClient.connect(host=self._creds.endpoint,
+                                        port=self._creds.port,
+                                        keepalive=self._cfg.keepalive)
+
                 break
             except Exception as e:
                 logger.error("ZDMClient.connect", e)
@@ -114,22 +99,14 @@ The ZDMClient class
         self.request_status()
         self._send_manifest()
 
-    def set_password(self, pw):
-        """
-    .. method:: set_password(pw)
-
-        Set the device password to :samp:`pw`. You can generate a password using the ZDM, creating a key for your device
-        """
-        self.mqttClient.set_username_pw(self.mqtt_id, pw)
-
     def publish(self, payload, tag):
         """
     .. method:: publish(payload, tag)
 
         Publish a message to the ZDM.
 
-        * :samp:`payload` is the message payload, represented by a dictionary
-        * :samp:`tag`, is a label for the device's data into your workspace. More than one device can publish message to the same tag
+        * :samp:`payload` is a dictionary containing the payload.
+        * :samp:`tag`, is the tag associated to the published payload.
         """
         topic = self._build_ingestion_topic(tag)
         self.mqttClient.publish(topic, payload)
@@ -139,6 +116,11 @@ The ZDMClient class
         logger.debug("Status requested")
 
     def request_timestamp(self):
+        """
+    .. method:: request_timestamp()
+
+    Request the timestamp to the ZDM.
+    """
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "now")
         logger.debug("Timestamps requested")
 
@@ -156,6 +138,10 @@ The ZDMClient class
 
     Create and return a new condition.
          * :samp:`condition_tag`, the tag of the new condition.
+
+
+    .. highlight:: python
+        d = 4
     """
         if condition_tag in self.condition_tags:
             return Condition(self, condition_tag)
