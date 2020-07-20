@@ -2,6 +2,7 @@
 .. module:: zerynthzdmclient
 
 .. _lib.zerynth.zdmclient:
+.. _lib.zerynth.condition:
 
 **********************
 ZDM Client Python
@@ -10,7 +11,7 @@ ZDM Client Python
 The Zerynth ZDM Client is a Python implementation of a client of the ZDM.
 It can be used to emulate a Zerynth device and connect it to the ZDM.
 
-    """
+"""
 
 import datetime
 import json
@@ -29,21 +30,23 @@ PORT = 1883
 
 class ZDMClient:
     """
-================
-The ZDMClient class
-================
+    ====================
+    The ZDMClient class
+    ====================
 
-.. class:: ZDMClient(device_id, jobs=None, endpoint=ENDPOINT, verbose=False, on_timestamp=None)
+.. class:: ZDMClient(device_id,  endpoint=ENDPOINT, jobs=None, condition_tags=[], verbose=False, on_timestamp=None, on_open_conditions=None)
 
     Creates a ZDM client instance with device id :samp:`device_id`. All other parameters are optional and have default values.
 
     * :samp:`device_id` is the id of the device.
+    * :samp:`endpoint` is the url of the ZDM broker (default mqtt.zdm.zerynth.com).
     * :samp:`jobs` is the dictionary that defines the device's available jobs (default None).
     * :samp:`condition_tags` is the list of condition tags that the device can open and close (default []).
-    * :samp:`endpoint` is the url of the ZDM broker (default rmq.zdm.zerynth.com).
     * :samp:`verbose` boolean flag for verbose output (default False).
-    * :samp:`on_timestamp` called when the ZDM responds to the timestamp request. on_timestamp(client, timestamp)
-    * :samp:`on_open_conditions` called when the ZDM responds to the open conditions request. on_open_conditions(client, conditions)
+    * :samp:`on_timestamp` called when the ZDM responds to the timestamp request.  Callback syntax `on_timestamp(client, timestamp)`
+    * :samp:`on_open_conditions` called when the ZDM responds to the open conditions request. Callback syntax  `on_open_conditions(client, conditions)`
+
+
 
     """
 
@@ -72,7 +75,7 @@ The ZDMClient class
 
     def id(self):
         """
-.. method:: id(pw)
+.. method:: id()
 
         Return the device id.
         """
@@ -82,7 +85,8 @@ The ZDMClient class
         """
 .. method:: connect()
 
-        Connect your device to the ZDM. You must set device's password first. It also enable your device to receive incoming messages.
+        Connect the device to the ZDM.
+        You must set device's password first.
         """
         for _ in range(5):
             try:
@@ -104,27 +108,33 @@ The ZDMClient class
         """
     .. method:: set_password(pw)
 
-        Set the device password to :samp:`pw`. You can generate a password using the ZDM, creating a key for your device
+        Set the device password to :samp:`pw`. You can generate a password using the ZDM.
         """
         self.mqttClient.set_username_pw(self.mqtt_id, pw)
 
-    def publish(self, payload, tag):
+    def publish(self, data, tag):
         """
-    .. method:: publish(payload, tag)
+    .. method:: publish(data, tag)
 
-        Publish a message to the ZDM.
+        Publish teh data to the ZDM.
 
-        * :samp:`payload` is the message payload, represented by a dictionary
-        * :samp:`tag`, is a label for the device's data into your workspace. More than one device can publish message to the same tag
+        * :samp:`data`, is a dictionary tha contains the message to be published
+        * :samp:`tag`, is a string representing the tag where the data is published.
         """
         topic = self._build_ingestion_topic(tag)
-        self.mqttClient.publish(topic, payload)
+        self.mqttClient.publish(topic, data)
 
     def request_status(self):
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "status")
         logger.debug("Status requested")
 
     def request_timestamp(self):
+        """
+    .. method:: request_timestamp()
+
+        Send a request to the ZDM to obtain the timestamp.
+
+        """
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "now")
         logger.debug("Timestamps requested")
 
@@ -132,7 +142,8 @@ The ZDMClient class
         """
     .. method:: request_open_conditions()
 
-    Request all the open conditions of the device not yet closed.
+        Send a request to the ZDM to obtain the current open conditions.
+
     """
         self._send_up_msg(MQTT_PREFIX_REQ_DEV, "conditions")
 
@@ -141,6 +152,7 @@ The ZDMClient class
     .. method:: new_condition()
 
     Create and return a new condition.
+
          * :samp:`condition_tag`, the tag of the new condition.
     """
         if condition_tag in self.condition_tags:
@@ -296,6 +308,19 @@ The ZDMClient class
 
 
 class Condition:
+    """
+====================
+The Condition class
+===================
+
+.. class:: Conditions(client. tag)
+
+Creates a new Condition assocaited to a tag.
+
+* :samp:`client` is the reference to a ZDMClient object
+* :samp:`tag` is the tag of the condition
+
+    """
     def __init__(self, client, tag):
         self.uuid = self._gen_uuid()
         self.tag = tag
@@ -317,6 +342,14 @@ class Condition:
         return str(self.finish)
 
     def open(self, payload=None, start=None):
+        """
+.. method:: open(payload=None, start=None)
+
+    Open the condition.
+
+        * :samp:`payload`, a dictionary for associating additional data to the opened condition (default None).
+        * :samp:`start`, a date time (rfc3339) used to  set the start time, If None the current timestamp is used (default None).
+    """
         if start is None:
             d = datetime.datetime.utcnow()
             self.start = d.isoformat("T") + "Z"
@@ -332,6 +365,14 @@ class Condition:
         self.client._send_up_msg('', 'condition', value)
 
     def close(self, payload=None, finish=None):
+        """
+.. method:: close(payload=None, start=None)
+
+    Close the condition.
+
+    * :samp:`payload`, a dictionary for associating additional data to the closed condition. Default None.
+    * :samp:`finish`, a date time (rfc3339) used to  set the finish time of the condition. If None the current timestamp is used. Default None.
+"""
         if finish is None:
             d = datetime.datetime.utcnow()
             self.finish = d.isoformat("T") + "Z"
@@ -345,6 +386,12 @@ class Condition:
         self.client._send_up_msg('', 'condition', value)
 
     def reset(self):
+        """
+.. method:: reset()
+
+    Reset the condition by generatung a new id and resetting the start and end time.
+
+"""
         self.uuid = self._gen_uuid()
         self.start = None
         self.finish = None
@@ -355,6 +402,7 @@ class Condition:
     def is_open(self):
         """
         .. method:: is_open()
+
         Return True if the condition is open. False otherwise.
         """
         return self.start is not None and self.finish is None

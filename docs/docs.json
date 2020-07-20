@@ -3,6 +3,6 @@
 	"title":"Zerynth ZDM Client Python",
 	"copyright":"Zerynth Team",
 	"files":[
-		["ZDM Client","zdm/device/zdmclient.py"]
+		["ZDM Client Library","zdm/device/zdmclient.py"]
 	]
 }
