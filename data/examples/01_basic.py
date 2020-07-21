@@ -13,6 +13,7 @@ device_id = 'Your-device-id'
 password = 'Device-Password'
 
 
+
 def pub_temp_hum():
     # this function publish into the tag weather two values: the temperature and the humidity
     tag = 'weather'
