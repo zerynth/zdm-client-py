@@ -9,14 +9,11 @@ import zdm
 import os
 from zdm.device.zdmclient import ZDMClient
 import time
+import inspect
+import os
 
 
-zdevice_path = os.path.dirname(__file__)
-
-print("MAIN PATH",  os.path.abspath('.'))
-crd = zdm.load_zdevice(".")
-
-device = ZDMClient(cred=crd)
+device = ZDMClient()
 
 device.connect()
 

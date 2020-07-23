@@ -6,6 +6,7 @@ import time
 from .constants import MQTT_PREFIX_REQ_DEV, MQTT_PREFIX_JOB, MQTT_PREFIX_STRONG_PRIVATE_STATUS, MQTT_KEY_FOTA
 from .mqtt import MQTTClient
 from ..logging import ZdmLogger
+import os
 
 logger = ZdmLogger().get_logger()
 
@@ -15,14 +16,13 @@ PORT = 1883
 from .credentials import Config
 from .credentials import Credentials
 
-
 class ZDMClient:
     """
 ================
 The ZDMClient class
 ================
 
-.. class:: ZDMClient(cred=None, cfg=None,  jobs_dict={}, condition_tags=[], on_timestamp=None, on_open_conditions=None, verbose=False, )
+.. class:: ZDMClient(cred=None, cfg=None,  jobs_dict={}, condition_tags=[], on_timestamp=None, on_open_conditions=None, verbose=False)
 
     Creates a ZDM client instance.
 
@@ -47,7 +47,7 @@ The ZDMClient class
 
         # get configuration
         self._cfg = Config() if cfg is None else cfg
-        self._creds = Credentials() if cred is None else cred
+        self._creds = Credentials(os.getcwd()) if cred is None else cred
 
         self.mqttClient = MQTTClient(mqtt_id=self._creds.device_id,
                                      clean_session=self._cfg.clean_session)
