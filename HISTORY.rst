@@ -2,9 +2,9 @@
 History
 =======
 
-1.0.0
+1.0.0 (2020-07-24)
 -----------------------
-Official release of ZDM.
+Official release of ZDM (Zerynth r2.6.0)
 * Added conditions and removed events.
 * Added requests_timestamp() method
 * Renamed publish_data() into publish().
