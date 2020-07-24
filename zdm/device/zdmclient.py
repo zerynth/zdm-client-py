@@ -36,17 +36,17 @@ class ZDMClient:
 The ZDMClient class
 ================
 
-.. class:: ZDMClient(device_id, jobs=None, endpoint=ENDPOINT, verbose=False, on_timestamp=None)
+.. class:: ZDMClient(cred=None, cfg=None,  jobs_dict={}, condition_tags=[], on_timestamp=None, on_open_conditions=None, verbose=False)
 
-    Creates a ZDM client instance with device id :samp:`device_id`. All other parameters are optional and have default values.
+    Creates a ZDM client instance.
 
     * :samp:`cred` is the object that contains the credentials of the device. If None the configurations are read from zdevice.json file.
     * :samp:`cfg` is the object that contains the mqtt configurations. If None set the default configurations.
     * :samp:`jobs_dict` is the dictionary that defines the device's available jobs (default None).
     * :samp:`condition_tags` is the list of condition tags that the device can open and close (default []).
-    * :samp:`on_timestamp` called when the ZDM responds to the timestamp request.  Callback syntax `on_timestamp(client, timestamp)`
-    * :samp:`on_open_conditions` called when the ZDM responds to the open conditions request. Callback syntax  `on_open_conditions(client, conditions)`
     * :samp:`verbose` boolean flag for verbose output (default False).
+    * :samp:`on_timestamp` callback called when the ZDM responds to the timestamp request. on_timestamp(client, timestamp)
+    * :samp:`on_open_conditions` callback called when the ZDM responds to the open conditions request. on_open_conditions(client, conditions)
 
     """
 
@@ -69,7 +69,6 @@ The ZDMClient class
 
         self.jobs = jobs_dict
         self.condition_tags = condition_tags
-
 
         self._on_timestamp = on_timestamp
         self._on_open_conditions = on_open_conditions
@@ -94,9 +93,9 @@ The ZDMClient class
 
         Connect your device to the ZDM.
         """
-        for _ in range(5):
+        for i in range(5):
             try:
-                logger.info("ZDMClient.connect attempt")
+                logger.info("ZDMClient.connect attempt {} ".format(i))
                 self.mqttClient.connect(host=self._creds.endpoint,
                                         port=self._creds.port,
                                         keepalive=self._cfg.keepalive)
@@ -112,7 +111,6 @@ The ZDMClient class
         self._subscribe_down()
         self.request_status()
         self._send_manifest()
-
 
     def publish(self, payload, tag):
         """

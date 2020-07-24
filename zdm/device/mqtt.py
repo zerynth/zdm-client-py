@@ -12,6 +12,7 @@ logger = ZdmLogger().get_logger()
 class MQTTClient:
 
     def __init__(self, mqtt_id, clean_session=False, ssl_ctx=None):
+
         self.client = mqtt.Client(mqtt_id, clean_session=clean_session)
         self.ssl_ctx = ssl_ctx
 
@@ -40,10 +41,10 @@ class MQTTClient:
         # 3: Connection refused - server unavailable
         # 4: Connection refused - bad username or password
         # 5: Connection refused - not authorised 6-255: Currently unused.
-        logger.info("On connect flags:{}, rc:{}".format(flags, mqtt.error_string(rc)))
+        logger.debug("On connect flags:{}, rc:{}".format(flags, mqtt.error_string(rc)))
         if rc == 0:
             self.connected = True
-            logger.info("Successfully connected. Returned code={}".format(rc))
+            logger.info("Successfully connected.")
         else:
             self.connected = False
             logger.error("Error in connection. Returned code={}".format(rc))
