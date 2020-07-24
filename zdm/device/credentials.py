@@ -2,16 +2,15 @@ import base64
 import json
 import os
 import time
-
+import tempfile
+import ssl
 import jwt
 
 from ..logging import ZdmLogger
 
 logger = ZdmLogger().get_logger()
 
-
-
-# load credential from zdevice.json file
+# Load  zdevice.json file
 def load_zdevice(root_zdevice, file="zdevice.json"):
     logger.info("Reading zdevice.json path {}".format(root_zdevice))
     with open(os.path.join(root_zdevice, file)) as ff:

@@ -3,14 +3,14 @@ History
 =======
 
 1.0.0
-(to be released)
 -----------------------
-* Added conditions and removed events
-* requests timestamp
-* renamed publish_data() into publish(). Mark as deprecated the publish_data().
-* fix job args after expected status received.
+Official release of ZDM.
+* Added conditions and removed events.
+* Added requests_timestamp() method
+* Renamed publish_data() into publish().
+* Fix job args after expected status received.
 * Renamed jobs parameters into jobs_dict of the ZDMClient.
-* Parameters of publish(payload, tag) methods inverted. First parameter is payload and second if tag.
+* Parameters of publish(payload, tag) methods inverted. First parameter is payload and second is tag.
 
 0.2.0 (2020-06-16)
 ----------------------------

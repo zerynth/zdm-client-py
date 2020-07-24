@@ -85,7 +85,7 @@ The ZDMClient class
 
         Return the device id.
         """
-        return self.mqtt_id
+        return self.mqttClient.client.client_id
 
     def connect(self):
         """
@@ -206,7 +206,7 @@ The ZDMClient class
         elif job in self.jobs:
             try:
                 res = self.jobs[job](self, args)
-                logger.info("[{}] job {} executed with result res: {}".format(self.mqtt_id, job, res))
+                logger.info("Job {} executed with result res: {}".format(job, res))
                 self._reply_job(job, res)
             except Exception as e:
                 print("zlib_zdm.Device.handle_job_request", e)

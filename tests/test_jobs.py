@@ -25,8 +25,7 @@ class JobsTest(unittest.TestCase):
         jwt = key.as_jwt(exp_delta_in_days=90)
         log.info("Created device {}, password {}".format(self.d.id, jwt))
 
-        self.device = zdm.ZDMClient(device_id=self.d.id, endpoint=ENDPOINT)
-        self.device.set_password(jwt)
+        self.device = zdm.ZDMClient()
         self.device.connect()
 
     def test_job(self):
