@@ -1,16 +1,19 @@
 astroid==2.3.3
-zdm-client-py
 certifi==2019.11.28
 chardet==3.0.4
+click==7.1.2
 idna==2.8
+install==1.3.3
 isort==4.3.21
 lazy-object-proxy==1.4.3
 mccabe==0.6.1
 nose==1.3.7
 paho-mqtt==1.5.0
+PyJWT==1.7.1
 pylint==2.4.4
 requests==2.22.0
 six==1.13.0
 typed-ast==1.4.0
 urllib3==1.25.7
 wrapt==1.11.2
+-e git+ssh://git@repo.zerynth.com:10022/zerynth-adm/zdm-client-py.git@f1c68379f54fff39cbb9492cab6d7b83b2bdd832#egg=zdm_client_py

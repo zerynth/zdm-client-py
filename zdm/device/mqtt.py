@@ -9,19 +9,15 @@ import sys
 
 logger = ZdmLogger().get_logger()
 
-# def on_message(c, u, m):
-#     print("###############################")
-
 class MQTTClient:
 
-    def __init__(self, mqtt_id, ssl_ctx=None):
-        # TODO: pass clean session as parameter
-        self.client = mqtt.Client(mqtt_id, clean_session=False)
+    def __init__(self, mqtt_id, clean_session=False, ssl_ctx=None):
+        self.client = mqtt.Client(mqtt_id, clean_session=clean_session)
         self.ssl_ctx = ssl_ctx
 
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
-        self.client.on_message = self.on_message #on_message #
+        self.client.on_message = self.on_message
         self.client.on_publish = self.on_publish
 
         self._ready_msg = {}  # used only for caching the messages to be sent, and print the when they are effectively sent to the broker
@@ -31,8 +27,8 @@ class MQTTClient:
     def set_username_pw(self, username, password):
         self.client.username_pw_set(username=username, password=password)
 
-    def connect(self, host, port=1883):
-        self.client.connect(host, port=port, )
+    def connect(self, host, port=1883, keepalive=60):
+        self.client.connect(host, port=port, keepalive=keepalive)
         self.client.loop_start()
         logger.info("Connecting to: {}:{}".format(host, port))
 
