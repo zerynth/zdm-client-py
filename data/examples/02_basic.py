@@ -1,3 +1,10 @@
+################################################################################
+# Zerynth Device Manager
+#
+# Created by Zerynth Team 2020 CC
+# Authors: E.Neri, D.Neri
+###############################################################################
+
 """
 basic.py
 
@@ -5,13 +12,10 @@ Show the basic example of a ZdmClient that sends a stream of messages to the ZDM
 Each message is published into a random tag with a random value.
 
 """
-import zdm
 import random
 import time
 
-device_id = 'Your-device-id'
-password = 'Device-Password'
-
+import zdm
 
 
 def pub_temp_hum():
@@ -25,8 +29,7 @@ def pub_temp_hum():
 
 
 # connection to the ZDM
-device = zdm.ZDMClient(device_id=device_id)
-device.set_password(password)
+device = zdm.ZDMClient()
 device.connect()
 
 # infinite loop

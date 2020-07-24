@@ -1,3 +1,9 @@
+################################################################################
+# Zerynth Device Manager
+#
+# Created by Zerynth Team 2020 CC
+# Authors: E.Neri, D.Neri
+###############################################################################
 """
 conditions.py
 
@@ -16,25 +22,21 @@ In recharge mode, the battery level id increased, and whenever the level reach a
 
 """
 import time
-from zdm import ZDMClient
-from zdm.logging import ZdmLogger
+import zdm
 
-logger = ZdmLogger().get_logger()
+logger = zdm.ZdmLogger().get_logger()
 
-device_id = 'Your-Device-Id'
-password = 'Device-Password'
 
 condition_tag = "battery"
 
 # this function asks to ZDM for open conditions, then close it
-def on_open_conditions(device, conditions):
+def on_open_conditions(zdmclient, conditions):
     for c in conditions:
         print("Closing: ", c)
         c.close(payload={"callback": "condition closed by callback"})
 
 
-device = ZDMClient(device_id=device_id, condition_tags=[condition_tag], on_open_conditions=on_open_conditions)
-device.set_password(password)
+device = zdm.ZDMClient(condition_tags=[condition_tag], on_open_conditions=on_open_conditions)
 device.connect()
 
 

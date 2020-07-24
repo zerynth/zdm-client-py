@@ -1,19 +1,27 @@
+################################################################################
+# Zerynth Device Manager
+#
+# Created by Zerynth Team 2020 CC
+# Authors: E.Neri, D.Neri
+###############################################################################
+
 """
 jobs.py
 
-Show a simple example of how to define a custom job and pass it to the ZdmClient.
+A basic example showing ZDM Jobs and how to handle them.
+Write your own jobs, then add them in the jobs dictionary with a custom key.
 
+Once your device is connected to the ZDM, you can send it job commands using the key you defined and your device
+will execute functions remotely.
 """
+
 import time
 import random
 import zdm
 
-device_id = 'Your-device-id'
-password = 'Device-Password'
-
 
 # This job generates and returns a random number
-def job_random(device, arg):
+def job_random(zdmclient, arg):
     print("Executing Job random ...")
     return {
         'rnd': random.randint(0, 100),
@@ -21,7 +29,7 @@ def job_random(device, arg):
 
 
 # This job adds two numbers (num1, num2) and return the result.
-def job_adder(device, arg):
+def job_adder(zdmclient, arg):
     print("Executing Job adder ...")
     if "num1" in arg and "num2" in arg:
         res = arg['num1'] + arg["num2"]
@@ -38,8 +46,8 @@ my_jobs = {
     'jobAdder': job_adder,
 }
 
-device = zdm.ZDMClient(device_id=device_id, jobs_dict=my_jobs)
-device.set_password(password)
+# create a ZDM Device instance and pass to it the the jobs dictionary
+device = zdm.ZDMClient(jobs_dict=my_jobs)
 device.connect()
 
 while True:
