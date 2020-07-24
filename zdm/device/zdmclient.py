@@ -10,9 +10,6 @@ import os
 
 logger = ZdmLogger().get_logger()
 
-ENDPOINT = "mqtt.zdm.zerynth.com"
-PORT = 1883
-
 from .credentials import Config
 from .credentials import Credentials
 
@@ -79,9 +76,9 @@ The ZDMClient class
 
         Connect your device to the ZDM.
         """
-        for _ in range(5):
+        for i in range(5):
             try:
-                logger.info("ZDMClient.connect attempt")
+                logger.info("ZDMClient.connect attempt {} ".format(i))
                 self.mqttClient.connect(host=self._creds.endpoint,
                                         port=self._creds.port,
                                         keepalive=self._cfg.keepalive)

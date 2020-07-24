@@ -1,6 +1,8 @@
 =======
 History
 =======
+
+1.0.0
 (to be released)
 -----------------------
 * Added conditions and removed events
