@@ -1,6 +1,6 @@
 include HISTORY.rst
 
-include data
+include data *
 
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]

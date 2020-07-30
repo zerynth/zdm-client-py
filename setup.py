@@ -23,11 +23,6 @@ setuptools.setup(
     packages=setuptools.find_packages(exclude=['tests']),
     install_requires=requirements,
     include_package_data=True,
-    data_files=[
-        ('/usr/share/zdm/examples',
-         ['data/examples/01_basic.py',
-          'data/examples/02_jobs.py'])
-    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
