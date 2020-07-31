@@ -25,12 +25,16 @@ def default_time_func():
 class Credentials():
 
     def __init__(self, root_zdevice):
-        try:
-            logger.debug("Read zdevice.json location path {}".format(root_zdevice))
-            nfo = load_zdevice(root_zdevice)
-        except Exception as e:
-            logger.error("Can't load device provisioning info", e)
-            raise e
+        if isinstance(root_zdevice, dict):
+            logger.debug("Read zdevice.json from json")
+            nfo = root_zdevice
+        else:
+            try:
+                logger.debug("Read zdevice.json location path {}".format(root_zdevice))
+                nfo = load_zdevice(root_zdevice)
+            except Exception as e:
+                logger.error("Can't load device provisioning info", e)
+                raise e
         self.device_id = nfo["devinfo"]["device_id"]
         self.mode = nfo["devinfo"]["mode"]
         self.secret = nfo["prvkey"]
