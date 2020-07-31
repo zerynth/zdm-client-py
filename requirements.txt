@@ -16,4 +16,3 @@ six==1.13.0
 typed-ast==1.4.0
 urllib3==1.25.7
 wrapt==1.11.2
--e git+ssh://git@repo.zerynth.com:10022/zerynth-adm/zdm-client-py.git@f1c68379f54fff39cbb9492cab6d7b83b2bdd832#egg=zdm_client_py
