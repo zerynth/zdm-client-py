@@ -85,7 +85,7 @@ The ZDMClient class
 
         Return the device id.
         """
-        return self.mqttClient.client.client_id
+        return self._creds.device_id
 
     def connect(self):
         """
