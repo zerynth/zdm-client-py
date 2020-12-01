@@ -2,6 +2,10 @@
 History
 =======
 
+1.0.1 (2020-12-01)
+-----------------------
+* Fix import pyJwt
+
 1.0.0 (2020-07-24)
 -----------------------
 Official release of ZDM (Zerynth r2.6.0)

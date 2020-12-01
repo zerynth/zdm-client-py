@@ -8,12 +8,13 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     "paho-mqtt",
-    "click"
+    "click",
+    "pyjwt"
 ]
 
 setuptools.setup(
     name="zdm-client-py",
-    version="1.0.0",
+    version="1.0.1",
     author="Zerynth Team",
     author_email="d.neri@zerynth.com",
     description="ZDM Client Python Library",

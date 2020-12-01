@@ -1,6 +1,6 @@
 # Zerynth ZDM Client Python Library
 
-A python library that emulates a device for the  ZDM (Zerynth Device Maanager).
+A python library that emulates a device for the  ZDM (Zerynth Device Manager).
 The library permits: to connect to the ZDM, to send data and to receive jobs.
 
 ## Installation
@@ -11,36 +11,40 @@ pip install zdm-client-py
 ```
     
 ## Usage
-Login to the ZDM platform (by using the [ZDM Web](https://zdm.zerynth.com) or the [ZDM CLI](https://www.zerynth.com/blog/docs/zdm/getting-started/the-zdm-command-line-interface/)).
-Add a new device and generate a new password for the device.
 
-Copy the obtained **Device Id** and **Password** in the example below.
+Follow the guide [here](https://docs.zerynth.com/latest/deploy/getting_started_with_rpi/)
 
-In the example, the Client connects to the ZDM with the username e password.
-Then it sends an infinite stream of messages onto three different tags ("bathroom", "bedroom", "living room") with a random temperature.
+1. Login to the ZDM platform (by using the [ZDM Web](https://zdm.zerynth.com) or the [ZDM CLI](https://www.zerynth.com/blog/docs/zdm/getting-started/the-zdm-command-line-interface/)).
+2. Create a device
+3. Generate the credentials for the device (file `zdevice.json`)
+4. Create a new Python project with your preferred editor and paste the `zdevice.json` file inside it. 
+5.  Create a Python file `zdm_basic.py` and paste this simple code into it:
 
 ```python
+import zdm
 import random
 import time
-import zdm
 
-device_id = '!!! PUT YOU DEVICE_ID HERE !!!'
-password = '!!! PUT YOU PASSWORD HER !!!'
+def pub_temp_hum():
+    # this function publish into the tag weather two random values: the temperature and the humidity
+    tag = 'weather'
+    temp = random.randint(19, 38)
+    hum = random.randint(50, 70)
+    payload = {'temp': temp, 'hum': hum}
+    device.publish(payload, tag)
+    print('Published: ', payload)
 
-device = zdm.ZDMClient(device_id=device_id)
-device.set_password(password)
+
+# connect to the ZDM using credentials in zdevice.json file
+device = zdm.ZDMClient()
 device.connect()
 
-time.sleep(5)
-
-tags = ["tag1", "tag2", "tag3"]
-
+# infinite loop
 while True:
-    temp = random.randint(10, 30)  # random temperature
-    tag = random.choice(tags)      # random choice of the tag
-    payload = {"temp": temp}
-    device.publish_data(tag, payload)
-    time.sleep(1)
+    pub_temp_hum()
+    time.sleep(5)
 ```
+In the example, the Client connects to the ZDM with the username e password.
+Then it sends an infinite stream of messages onto three different tags ("bathroom", "bedroom", "living room") with a random temperature.
 
 You can find other examples in the `data/examples` folder.
