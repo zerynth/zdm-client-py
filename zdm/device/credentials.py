@@ -10,9 +10,9 @@ from ..logging import ZdmLogger
 
 logger = ZdmLogger().get_logger()
 
-# Load  zdevice.json file
+# Load zdevice.json file
 def load_zdevice(root_zdevice, file="zdevice.json"):
-    path =  os.path.join(root_zdevice, file)
+    path = os.path.join(root_zdevice, file)
     logger.info("Reading credential file: '{}'".format(path))
     with open(path) as ff:
         content = json.load(ff)
