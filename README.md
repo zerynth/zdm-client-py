@@ -48,3 +48,5 @@ In the example, the Client connects to the ZDM with the username e password.
 Then it sends an infinite stream of messages onto three different tags ("bathroom", "bedroom", "living room") with a random temperature.
 
 You can find other examples in the `data/examples` folder.
+
+

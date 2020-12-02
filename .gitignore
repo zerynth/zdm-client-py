@@ -124,3 +124,5 @@ dmypy.json
 
 # ---> Intellij
 .idea/*
+
+zdevice.json

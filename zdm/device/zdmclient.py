@@ -58,7 +58,8 @@ The ZDMClient class
                  on_timestamp=None,
                  on_open_conditions=None,
                  verbose=False):
-
+        if verbose:
+            logger.setLevel(logging.DEBUG)
         # get configuration
         self._cfg = Config() if cfg is None else cfg
         self._creds = Credentials(os.getcwd()) if cred is None else cred
@@ -76,8 +77,7 @@ The ZDMClient class
         self.data_topic = '/'.join(['j', 'data', self._creds.device_id])
         self.up_topic = '/'.join(['j', 'up', self._creds.device_id])
         self.dn_topic = '/'.join(['j', 'dn', self._creds.device_id])
-        if verbose:
-            logger.setLevel(logging.DEBUG)
+
 
     def id(self):
         """
