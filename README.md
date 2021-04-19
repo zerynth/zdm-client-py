@@ -7,7 +7,7 @@ The library permits: to connect to the ZDM, to send data and to receive jobs.
 
 The latest stable version [is available on PyPI](https://pypi.org/project/zdm-client-py/). Either add `zdm-client-py` to your `requirements.txt` file or install with pip:
 ```
-pip install zdm-client-py
+pip install zdm-client-py==1.0.1
 ```
     
 ## Usage
