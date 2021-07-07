@@ -16,10 +16,10 @@ Follow the steps:
 
 1. Login to the ZDM platform (by using the [ZDM Web](https://zdm.zerynth.com) 
 2. Enter into a workspace and create a new device. "Devices" -> "Add Device"
-3. Generate the credentials file (named `zdevice.json`) for the device. "Security" -> "Ok" -> "Download Credentials"
+3. Generate the credentials file (named `zdevice.json`) for the device. Select a Device -> "Security" -> "Ok" -> "Download Credentials"
 4. Create a new folfer and copy into it the:
     - The credential `zdevice.json` file. 
-    - A Python file `zdm_basic.py` containing the followinf script:
+    - A Python file `zdm_basic.py` containing the following script:
 
     ```python
     import zdm
