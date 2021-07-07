@@ -12,7 +12,7 @@ pip install zdm-client-py==1.0.1
     
 ## Usage
 
-Follow the guide [here](https://docs.zerynth.com/latest/deploy/getting_started_with_rpi/)
+Follow the steps:
 
 1. Login to the ZDM platform (by using the [ZDM Web](https://zdm.zerynth.com) or the [ZDM CLI](https://www.zerynth.com/blog/docs/zdm/getting-started/the-zdm-command-line-interface/)).
 2. Create a device
