@@ -14,7 +14,7 @@ pip install zdm-client-py==1.0.1
 
 Follow the steps:
 
-1. Login to the ZDM platform (by using the [ZDM Web](https://zdm.zerynth.com) or the [ZDM CLI](https://www.zerynth.com/blog/docs/zdm/getting-started/the-zdm-command-line-interface/)).
+1. Login to the ZDM platform (by using the [ZDM Web](https://zdm.zerynth.com) 
 2. Enter into a workspace and create a new device. "Devices" -> "Add Device"
 3. Generate the credentials file (named `zdevice.json`) for the device. "Security" -> "Ok" -> "Download Credentials"
 4. Create a new folfer and copy into it the:
