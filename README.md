@@ -14,11 +14,12 @@ pip install zdm-client-py==1.0.1
 
 Follow the steps:
 
-1. Login to the ZDM platform (by using the [ZDM Web](https://zdm.zerynth.com) 
-2. Enter into a workspace and create a new device. "Devices" -> "Add Device"
-3. Generate the credentials file (named `zdevice.json`) for the device. Select a Device -> "Security" -> "Ok" -> "Download Credentials"
-4. Create a new folfer and copy into it the:
-    - The credential `zdevice.json` file. 
+1. Login to the [Zerynyth Cloud](https://cloud.zerynth.com) 
+2. Select a workspace
+3. Create a device. "Devices" -> "New" -> "Device"
+4. Generate the credentials file for the device. Select a Device -> "Security" -> "Confirm" -> "Download". The platform saves the device credential into a `zdevice.json` file.
+5. Create a new folderand add the following files:
+    - The device credential `zdevice.json` file. 
     - A Python file `zdm_basic.py` containing the following script:
 
     ```python
@@ -46,9 +47,7 @@ Follow the steps:
         time.sleep(5)
     ```
   5. Run the example `python zdm_basic.py`
-  6
-In the example, the Client connects to the ZDM with the username e password.
-Then it sends an infinite stream of messages onto three different tags ("bathroom", "bedroom", "living room") with a random temperature.
+  6. In the example, the Client connects to the Cloud and it sends an infinite stream of messages every 5 second. Everu message is published with a tag "weather" containing a random temperature and humidity.
 
 You can find other examples in the `data/examples` folder.
 
