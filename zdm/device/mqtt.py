@@ -58,17 +58,15 @@ class MQTTClient:
         # TODO; call loop_stop() ??
         # loop_stop
 
-    def publish(self, topic, payload=None, qos=1):
+    def publish(self, topic, payload=None, qos=1, wait=True):
         if isinstance(payload, dict):
             payload_str = json.dumps(payload)
         else:
             payload_str = payload
-        try:
-            ret = self.client.publish(topic, payload_str, qos=qos)
-            self._ready_msg[ret.mid] = payload
-        except Exception as e:
-            logger.error("Error" + e)
-
+        ret = self.client.publish(topic, payload_str, qos=qos)
+        self._ready_msg[ret.mid] = payload
+        ret.wait_for_publish()
+      
     def on_publish(self, client, userdata, mid):
         payload = self._ready_msg[mid]
         if "key" in payload:
