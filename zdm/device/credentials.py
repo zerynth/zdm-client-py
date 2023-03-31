@@ -107,7 +107,7 @@ class Credentials():
         return token
 
     def _save_to_tempfile(self, content):
-        path = os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
+        path = os.path.join(os.path.realpath(tempfile.gettempdir()), os.urandom(24).hex())
         logger.debug("Saving '{}' to file path '{}'".format(content, path))
         with open(path, 'w') as fp:
             fp.write(content)
