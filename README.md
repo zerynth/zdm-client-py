@@ -14,7 +14,7 @@ pip install zdm-client-py==1.0.1
 
 Follow the steps:
 
-1. Login to the [Zerynyth Cloud](https://cloud.zerynth.com) 
+1. Login to the [Zerynth Cloud](https://cloud.zerynth.com) 
 2. Select a workspace
 3. Create a device. "Devices" -> "New" -> "Device"
 4. Generate the credentials file for the device and save it locally. Select a Device -> "Security" -> "Confirm" -> "Download" (the file is named `zdevice.json`).
